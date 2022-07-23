@@ -567,8 +567,8 @@ public class LocalMetastore implements ConnectorMetadata {
                 ErrorReport.reportDdlException(ErrorCode.ERR_BAD_TABLE_ERROR, tableName);
             }
 
-            if (table.getType() != Table.TableType.OLAP) {
-                throw new DdlException("table[" + tableName + "] is not OLAP table");
+            if (!table.isOlapOrLakeTable()) {
+                throw new DdlException("table[" + tableName + "] is not OLAP table or LAKE table");
             }
             OlapTable olapTable = (OlapTable) table;
 
@@ -1382,6 +1382,8 @@ public class LocalMetastore implements ConnectorMetadata {
     }
 
     public void dropPartition(Database db, Table table, DropPartitionClause clause) throws DdlException {
+        // for debug
+        LOG.info("enter dropPartition in LocalMetaStore");
         OlapTable olapTable = (OlapTable) table;
         Preconditions.checkArgument(db.isWriteLockHeldByCurrentThread());
 
@@ -1408,6 +1410,8 @@ public class LocalMetastore implements ConnectorMetadata {
 
         // drop
         if (isTempPartition) {
+            // for debug
+            LOG.info("isTempPartition");
             olapTable.dropTempPartition(partitionName, true);
         } else {
             if (!clause.isForceDrop()) {
@@ -4565,13 +4569,13 @@ public class LocalMetastore implements ConnectorMetadata {
         for (MaterializedIndex index : partition.getMaterializedIndices(MaterializedIndex.IndexExtState.ALL)) {
             for (Tablet tablet : index.getTablets()) {
                 long tabletId = tablet.getId();
-                invertedIndex.deleteTablet(tabletId);
                 TabletMeta tabletMeta = invertedIndex.getTabletMeta(tabletId);
                 if (tabletMeta.isLakeTablet()) {
                     // for debug
                     LOG.info("tablet {} is lake tablet", tabletId);
                     tabletIdSet.add(tabletId);
                 }
+                invertedIndex.deleteTablet(tabletId);
             }
         }
         if (!tabletIdSet.isEmpty()) {
