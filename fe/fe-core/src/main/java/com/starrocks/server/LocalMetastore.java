@@ -1205,24 +1205,13 @@ public class LocalMetastore implements ConnectorMetadata {
         }
     }
 
-    private void cleanTabletIdSetForAll(Set<Long> tabletIdSetForAll) {
-        Set<Long> shardIdSet = new HashSet<Long>();
-        TabletInvertedIndex invertedIndex = GlobalStateMgr.getCurrentInvertedIndex();
+    private void cleanTabletIdSetForAll(Set<Long> tabletIdSetForAll, boolean isLakeTable) {
         for (Long tabletId : tabletIdSetForAll) {
-            TabletMeta tabletMeta = invertedIndex.getTabletMeta(tabletId);
-<<<<<<< HEAD
-            // only need to count lakeTablet
-=======
-            // only need to return lakeTablet
->>>>>>> e5936d19e (update codes)
-            if (tabletMeta != null && tabletMeta.isLakeTablet()) {
-                shardIdSet.add(tabletId);
-            }
-            GlobalStateMgr.getCurrentInvertedIndex().deleteTablet(tabletId);
+            invertedIndex.deleteTablet(tabletId);
         }
         // lake table need to delete shards
-        if (!shardIdSet.isEmpty()) {
-            stateMgr.getShardManager().getShardDeleter().addUnusedShardId(shardIdSet);
+        if (isLakeTable) {
+            stateMgr.getShardManager().getShardDeleter().addUnusedShardId(tabletIdSetForAll);
         }
     }
 
@@ -1310,7 +1299,7 @@ public class LocalMetastore implements ConnectorMetadata {
                 db.writeUnlock();
             }
         } catch (DdlException e) {
-            cleanTabletIdSetForAll(tabletIdSetForAll);
+            cleanTabletIdSetForAll(tabletIdSetForAll, olapTable.isLakeTable());
             throw e;
         }
     }
