@@ -76,6 +76,12 @@ statement
     | updateStatement                                                                       #update
     | deleteStatement                                                                       #delete
 
+    //Routine Statement
+    | stopRoutineLoadStatement                                                              #stopRoutineLoad
+    | resumeRoutineLoadStatement                                                            #resumeRoutineLoad
+    | pauseRoutineLoadStatement                                                             #pauseRoutineLoad
+    | showRoutineLoadStatement                                                              #showRoutineLoad
+
     // Admin Statement
     | ADMIN SET FRONTEND CONFIG '(' property ')'                                            #adminSetConfig
     | ADMIN SET REPLICA STATUS properties                                                   #adminSetReplicaStatus
@@ -457,6 +463,12 @@ alterClause
     | modifyTablePropertiesClause
     | addPartitionClause
     | modifyPartitionClause
+    | addColumnClause
+    | addColumnsClause
+    | dropColumnClause
+    | modifyColumnClause
+    | columnRenameClause
+    | reorderColumnsClause
     ;
 
 addPartitionClause
@@ -523,6 +535,29 @@ modifyPartitionClause
     : MODIFY PARTITION (identifier | identifierList | '(' ASTERISK_SYMBOL ')') SET propertyList
     ;
 
+addColumnClause
+    : ADD COLUMN columnDesc (FIRST | AFTER identifier)? ((TO | IN) rollupName=identifier)? properties?
+    ;
+
+addColumnsClause
+    : ADD COLUMN '(' columnDesc (',' columnDesc)* ')' ((TO | IN) rollupName=identifier)? properties?
+    ;
+
+dropColumnClause
+    : DROP COLUMN identifier (FROM rollupName=identifier)? properties?
+    ;
+
+modifyColumnClause
+    : MODIFY COLUMN columnDesc (FIRST | AFTER identifier)? (FROM rollupName=identifier)? properties?
+    ;
+
+columnRenameClause
+    : RENAME COLUMN oldColumn=identifier newColumn=identifier
+    ;
+
+reorderColumnsClause
+    : ORDER BY identifierList (FROM rollupName=identifier)? properties?
+    ;
 // ------------------------------------------- DML Statement -----------------------------------------------------------
 
 insertStatement
@@ -537,6 +572,25 @@ updateStatement
 
 deleteStatement
     : explainDesc? DELETE FROM qualifiedName partitionNames? (WHERE where=expression)?
+    ;
+
+// ------------------------------------------- Routine Statement -----------------------------------------------------------
+
+stopRoutineLoadStatement
+    : STOP ROUTINE LOAD FOR (db=qualifiedName '.')? name=identifier
+    ;
+
+resumeRoutineLoadStatement
+    : RESUME ROUTINE LOAD FOR (db=qualifiedName '.')? name=identifier
+    ;
+
+pauseRoutineLoadStatement
+    : PAUSE ROUTINE LOAD FOR (db=qualifiedName '.')? name=identifier
+    ;
+
+showRoutineLoadStatement
+    : SHOW ALL? ROUTINE LOAD (FOR (db=qualifiedName '.')? name=identifier)?
+        (WHERE expression)? (ORDER BY sortItem (',' sortItem)*)? (limitElement)?
     ;
 
 // ------------------------------------------- Analyze Statement -------------------------------------------------------

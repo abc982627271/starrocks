@@ -1,6 +1,8 @@
 // This file is licensed under the Elastic License 2.0. Copyright 2021-present, StarRocks Limited.
 package com.starrocks.sql.ast;
 
+import com.starrocks.analysis.AddColumnClause;
+import com.starrocks.analysis.AddColumnsClause;
 import com.starrocks.analysis.AddPartitionClause;
 import com.starrocks.analysis.AdminSetConfigStmt;
 import com.starrocks.analysis.AdminSetReplicaStatusStmt;
@@ -26,6 +28,7 @@ import com.starrocks.analysis.CancelAlterTableStmt;
 import com.starrocks.analysis.CaseExpr;
 import com.starrocks.analysis.CastExpr;
 import com.starrocks.analysis.CloneExpr;
+import com.starrocks.analysis.ColumnRenameClause;
 import com.starrocks.analysis.CompoundPredicate;
 import com.starrocks.analysis.ComputeNodeClause;
 import com.starrocks.analysis.CreateDbStmt;
@@ -40,6 +43,7 @@ import com.starrocks.analysis.DdlStmt;
 import com.starrocks.analysis.DefaultValueExpr;
 import com.starrocks.analysis.DeleteStmt;
 import com.starrocks.analysis.DescribeStmt;
+import com.starrocks.analysis.DropColumnClause;
 import com.starrocks.analysis.DropDbStmt;
 import com.starrocks.analysis.DropFunctionStmt;
 import com.starrocks.analysis.DropIndexClause;
@@ -62,14 +66,18 @@ import com.starrocks.analysis.LimitElement;
 import com.starrocks.analysis.LiteralExpr;
 import com.starrocks.analysis.LoadStmt;
 import com.starrocks.analysis.ModifyBackendAddressClause;
+import com.starrocks.analysis.ModifyColumnClause;
 import com.starrocks.analysis.ModifyFrontendAddressClause;
 import com.starrocks.analysis.ModifyPartitionClause;
 import com.starrocks.analysis.ModifyTablePropertiesClause;
 import com.starrocks.analysis.OrderByElement;
 import com.starrocks.analysis.ParseNode;
+import com.starrocks.analysis.PauseRoutineLoadStmt;
 import com.starrocks.analysis.RecoverDbStmt;
 import com.starrocks.analysis.RecoverPartitionStmt;
 import com.starrocks.analysis.RecoverTableStmt;
+import com.starrocks.analysis.ReorderColumnsClause;
+import com.starrocks.analysis.ResumeRoutineLoadStmt;
 import com.starrocks.analysis.SetStmt;
 import com.starrocks.analysis.SetUserPropertyStmt;
 import com.starrocks.analysis.ShowAlterStmt;
@@ -88,6 +96,7 @@ import com.starrocks.analysis.ShowOpenTableStmt;
 import com.starrocks.analysis.ShowPartitionsStmt;
 import com.starrocks.analysis.ShowProcStmt;
 import com.starrocks.analysis.ShowProcesslistStmt;
+import com.starrocks.analysis.ShowRoutineLoadStmt;
 import com.starrocks.analysis.ShowStmt;
 import com.starrocks.analysis.ShowTableStatusStmt;
 import com.starrocks.analysis.ShowTableStmt;
@@ -96,6 +105,7 @@ import com.starrocks.analysis.ShowUserPropertyStmt;
 import com.starrocks.analysis.ShowVariablesStmt;
 import com.starrocks.analysis.SlotRef;
 import com.starrocks.analysis.StatementBase;
+import com.starrocks.analysis.StopRoutineLoadStmt;
 import com.starrocks.analysis.Subquery;
 import com.starrocks.analysis.SwapTableClause;
 import com.starrocks.analysis.SysVariableDesc;
@@ -353,6 +363,22 @@ public abstract class AstVisitor<R, C> {
         return visitShowStatement(statement, context);
     }
 
+    public R visitStopRoutineLoadStatement(StopRoutineLoadStmt statement, C context) {
+        return visitStatement(statement, context);
+    }
+
+    public R visitResumeRoutineLoadStatement(ResumeRoutineLoadStmt statement, C context) {
+        return visitStatement(statement, context);
+    }
+
+    public R visitPauseRoutineLoadStatement(PauseRoutineLoadStmt statement, C context) {
+        return visitStatement(statement, context);
+    }
+
+    public R visitShowRoutineLoadStatement(ShowRoutineLoadStmt statement, C context) {
+        return visitShowStatement(statement, context);
+    }
+
     public R visitAlterDbQuotaStmt(AlterDatabaseQuotaStmt statement, C context) {
         return visitStatement(statement, context);
     }
@@ -521,6 +547,30 @@ public abstract class AstVisitor<R, C> {
     }
 
     public R visitAddPartitionClause(AddPartitionClause clause, C context) {
+        return visitNode(clause, context);
+    }
+
+    public R visitAddColumnClause(AddColumnClause clause, C context) {
+        return visitNode(clause, context);
+    }
+
+    public R visitAddColumnsClause(AddColumnsClause clause, C context) {
+        return visitNode(clause, context);
+    }
+
+    public R visitDropColumnClause(DropColumnClause clause, C context) {
+        return visitNode(clause, context);
+    }
+
+    public R visitModifyColumnClause(ModifyColumnClause clause, C context) {
+        return visitNode(clause, context);
+    }
+
+    public R visitColumnRenameClause(ColumnRenameClause clause, C context) {
+        return visitNode(clause, context);
+    }
+
+    public R visitReorderColumnsClause(ReorderColumnsClause clause, C context) {
         return visitNode(clause, context);
     }
 
