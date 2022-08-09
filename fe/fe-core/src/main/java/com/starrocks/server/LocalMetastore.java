@@ -1210,7 +1210,11 @@ public class LocalMetastore implements ConnectorMetadata {
         TabletInvertedIndex invertedIndex = GlobalStateMgr.getCurrentInvertedIndex();
         for (Long tabletId : tabletIdSetForAll) {
             TabletMeta tabletMeta = invertedIndex.getTabletMeta(tabletId);
+<<<<<<< HEAD
             // only need to count lakeTablet
+=======
+            // only need to return lakeTablet
+>>>>>>> e5936d19e (update codes)
             if (tabletMeta != null && tabletMeta.isLakeTablet()) {
                 shardIdSet.add(tabletId);
             }
