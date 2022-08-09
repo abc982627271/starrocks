@@ -1207,7 +1207,7 @@ public class LocalMetastore implements ConnectorMetadata {
 
     private void cleanTabletIdSetForAll(Set<Long> tabletIdSetForAll, boolean isLakeTable) {
         for (Long tabletId : tabletIdSetForAll) {
-            invertedIndex.deleteTablet(tabletId);
+            GlobalStateMgr.getCurrentInvertedIndex().deleteTablet(tabletId);
         }
         // lake table need to delete shards
         if (isLakeTable) {
