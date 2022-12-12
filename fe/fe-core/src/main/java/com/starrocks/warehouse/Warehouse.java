@@ -270,9 +270,6 @@ public class Warehouse implements Writable {
         try {
             if (clusters.size() < maxCluster) {
                 long workerGroupId = GlobalStateMgr.getCurrentStarOSAgent().createWorkerGroup(this.size);
-                // for debug
-                LOG.info("add cluster, worker group id is {}", workerGroupId);
-
                 long clusterId = GlobalStateMgr.getCurrentState().getNextId();
                 Cluster cluster = new Cluster(clusterId, workerGroupId);
                 clusters.put(clusterId, cluster);
@@ -280,9 +277,6 @@ public class Warehouse implements Writable {
                 GlobalStateMgr.getCurrentState().getEditLog().logAddCluster(log);
 
                 this.state = WarehouseState.RUNNING;
-
-                // for debug
-                LOG.info("add cluster {} for warehouse {} ", clusterId, name);
             } else {
                 throw new DdlException("cluster num of " + name + "is " +
                         clusters.size() + " exceed max cluster limit " + maxCluster);
@@ -302,9 +296,6 @@ public class Warehouse implements Writable {
                 clusters.remove(clusterId);
                 AlterWhClusterOplog log = new AlterWhClusterOplog(this.getFullName(), cluster);
                 GlobalStateMgr.getCurrentState().getEditLog().logRemoveCluster(log);
-
-                // for debug
-                LOG.info("remove cluster {} for warehouse {} ", clusterId, name);
             } else {
                 throw new DdlException("cluster num of " + name + " exceed min cluster limit " + minCluster);
             }
@@ -319,8 +310,6 @@ public class Warehouse implements Writable {
             Cluster cluster = log.getCluster();
             clusters.put(cluster.getId(), cluster);
             this.state = WarehouseState.RUNNING;
-            // for debug
-            LOG.info("replay add cluster {} for warehouse {} ", cluster.getId(), name);
         } finally {
             writeUnLock();
         }
@@ -331,8 +320,6 @@ public class Warehouse implements Writable {
         try {
             Cluster cluster = log.getCluster();
             clusters.remove(cluster.getId());
-            // for debug
-            LOG.info("replay remove cluster {} for warehouse {} ", cluster.getId(), name);
         } finally {
             writeUnLock();
         }

@@ -71,7 +71,9 @@ import com.starrocks.common.Status;
 import com.starrocks.common.UserException;
 import com.starrocks.lake.LakeTablet;
 import com.starrocks.load.Load;
+import com.starrocks.qe.ConnectContext;
 import com.starrocks.server.GlobalStateMgr;
+import com.starrocks.system.Backend;
 import com.starrocks.system.SystemInfoService;
 import com.starrocks.thrift.TDataSink;
 import com.starrocks.thrift.TDataSinkType;
@@ -88,6 +90,7 @@ import com.starrocks.thrift.TTabletLocation;
 import com.starrocks.thrift.TUniqueId;
 import com.starrocks.thrift.TWriteQuorumType;
 import com.starrocks.transaction.TransactionState;
+import com.starrocks.warehouse.Warehouse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -457,9 +460,18 @@ public class OlapTableSink extends DataSink {
             int quorum = table.getPartitionInfo().getQuorumNum(partition.getId(), table.writeQuorum());
             for (MaterializedIndex index : partition.getMaterializedIndices(IndexExtState.ALL)) {
                 for (Tablet tablet : index.getTablets()) {
-                    if (table.isCloudNativeTable()) {
+                    if (table.isLakeTable()) {
+                        Warehouse warehouse = GlobalStateMgr.getCurrentState().getWarehouseMgr().
+                                getWarehouse(ConnectContext.get().getCurrentWarehouse());
+                        com.starrocks.warehouse.Cluster cluster = warehouse.getClusters().values().stream().findFirst().orElseThrow(
+                                () -> new UserException("no cluster exists in this warehouse")
+                        );
+                        long workerGroupId = cluster.getWorkerGroupId();
+                        // for debug
+                        LOG.info("current warehous is {}", warehouse.getFullName());
+                        LOG.info("workerGroupId is {}", workerGroupId);
                         locationParam.addToTablets(new TTabletLocation(
-                                tablet.getId(), Lists.newArrayList(((LakeTablet) tablet).getPrimaryBackendId())));
+                                tablet.getId(), Lists.newArrayList(((LakeTablet) tablet).getPrimaryBackendId(workerGroupId))));
                     } else {
                         // we should ensure the replica backend is alive
                         // otherwise, there will be a 'unknown node id, id=xxx' error for stream load
@@ -517,11 +529,33 @@ public class OlapTableSink extends DataSink {
 
         // check if disk capacity reach limit
         // this is for load process, so use high water mark to check
-        Status st = GlobalStateMgr.getCurrentSystemInfo().checkExceedDiskCapacityLimit(allBePathsMap, true);
-        if (!st.ok()) {
-            throw new DdlException(st.getErrorMsg());
+        if (!Config.use_staros) {
+            Status st = GlobalStateMgr.getCurrentSystemInfo().checkExceedDiskCapacityLimit(allBePathsMap, true);
+            if (!st.ok()) {
+                throw new DdlException(st.getErrorMsg());
+            }
         }
+
         return locationParam;
+        }
+
+    private TNodesInfo createStarrocksNodesInfo() throws UserException {
+        TNodesInfo nodesInfo = new TNodesInfo();
+        SystemInfoService systemInfoService = GlobalStateMgr.getCurrentState().getOrCreateSystemInfo(clusterId);
+        try {
+            String currentWarehouseName = ConnectContext.get().getCurrentWarehouse();
+            Warehouse warehouse = GlobalStateMgr.getCurrentState().getWarehouseMgr().getWarehouse(currentWarehouseName);
+            com.starrocks.warehouse.Cluster cluster = warehouse.getClusters().values().stream().findFirst().orElseThrow(
+                    () -> new UserException("no cluster exists in this warehouse")
+            );
+            long workerGroupId = cluster.getWorkerGroupId();
+            for (Backend backend : systemInfoService.getBackends(workerGroupId))  {
+                nodesInfo.addToNodes(new TNodeInfo(backend.getId(), 0, backend.getHost(), backend.getBrpcPort()));
+            }
+        } catch (UserException e) {
+            throw e;
+        }
+        return nodesInfo;
     }
 
     public boolean canUsePipeLine() {

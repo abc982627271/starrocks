@@ -135,9 +135,11 @@ public class HeartbeatMgr extends LeaderDaemon {
         }
 
         // send compute node heartbeat
-        for (ComputeNode computeNode : nodeMgr.getIdComputeNode().values()) {
-            BackendHeartbeatHandler handler = new BackendHeartbeatHandler(computeNode);
-            hbResponses.add(executor.submit(handler));
+        if (!Config.use_staros) {
+            for (ComputeNode computeNode : nodeMgr.getIdComputeNode().values()) {
+                BackendHeartbeatHandler handler = new BackendHeartbeatHandler(computeNode);
+                hbResponses.add(executor.submit(handler));
+            }
         }
 
         // send frontend heartbeat
@@ -445,6 +447,9 @@ public class HeartbeatMgr extends LeaderDaemon {
     }
 
     public void replayHearbeat(HbPackage hbPackage) {
+        if (Config.use_staros) {
+            return;
+        }
         for (HeartbeatResponse hbResult : hbPackage.getHbResults()) {
             handleHbResponse(hbResult, true);
         }

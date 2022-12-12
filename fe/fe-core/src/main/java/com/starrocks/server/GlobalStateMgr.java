@@ -633,6 +633,10 @@ public class GlobalStateMgr {
         this.metaContext = new MetaContext();
         this.metaContext.setThreadLocalInfo();
 
+        if (Config.use_staros) {
+            this.starOSAgent = new StarOSAgent();
+        }
+
         this.stat = new TabletSchedulerStat();
         this.nodeMgr = new NodeMgr(isCkptGlobalState, this);
         this.globalFunctionMgr = new GlobalFunctionMgr();
