@@ -28,7 +28,7 @@ import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.sql.ast.DropTableStmt;
 import com.starrocks.system.Backend;
 import com.starrocks.system.ComputeNode;
-import com.starrocks.system.SystemInfoService;
+import com.starrocks.system.LocalSystemInfoService;
 import com.starrocks.thrift.TCreatePartitionRequest;
 import com.starrocks.thrift.TCreatePartitionResult;
 import com.starrocks.thrift.TResourceUsage;
@@ -77,7 +77,7 @@ public class FrontendServiceImplTest {
         Backend backend = new Backend(0, "127.0.0.1", 80);
         ComputeNode computeNode = new ComputeNode(2, "127.0.0.1", 88);
 
-        new MockUp<SystemInfoService>() {
+        new MockUp<LocalSystemInfoService>() {
             @Mock
             public ComputeNode getBackendOrComputeNode(long id) {
                 if (id == backend.getId()) {

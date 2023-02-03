@@ -97,7 +97,7 @@ import com.starrocks.sql.ast.UserIdentity;
 import com.starrocks.system.Backend;
 import com.starrocks.system.BackendCoreStat;
 import com.starrocks.system.ComputeNode;
-import com.starrocks.system.SystemInfoService;
+import com.starrocks.system.LocalSystemInfoService;
 import com.starrocks.thrift.TStorageType;
 import mockit.Expectations;
 import mockit.Mock;
@@ -422,7 +422,7 @@ public class ShowExecutorTest {
     @Test
     public void testShowPartitions(@Mocked Analyzer analyzer) throws UserException {
 
-        new MockUp<SystemInfoService>() {
+        new MockUp<LocalSystemInfoService>() {
             @Mock
             public List<Long> getAvailableBackendIds() {
                 return Arrays.asList(10001L, 10002L, 10003L);
@@ -756,7 +756,7 @@ public class ShowExecutorTest {
             }
         };
 
-        new MockUp<SystemInfoService>() {
+        new MockUp<LocalSystemInfoService>() {
             @Mock
             List<Long> getBackendIds(boolean needAlive) {
                 List<Long> backends = Lists.newArrayList();

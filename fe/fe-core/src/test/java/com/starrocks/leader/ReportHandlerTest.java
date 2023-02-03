@@ -24,7 +24,7 @@ import com.starrocks.qe.QueryQueueManager;
 import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.system.Backend;
 import com.starrocks.system.ComputeNode;
-import com.starrocks.system.SystemInfoService;
+import com.starrocks.system.LocalSystemInfoService;
 import com.starrocks.thrift.TBackend;
 import com.starrocks.thrift.TMasterResult;
 import com.starrocks.thrift.TReportRequest;
@@ -148,7 +148,7 @@ public class ReportHandlerTest {
         Backend backend = new Backend(0, "127.0.0.1", 80);
         ComputeNode computeNode = new ComputeNode(2, "127.0.0.1", 88);
 
-        new MockUp<SystemInfoService>() {
+        new MockUp<LocalSystemInfoService>() {
             @Mock
             public ComputeNode getBackendOrComputeNode(long id) {
                 if (id == backend.getId()) {
