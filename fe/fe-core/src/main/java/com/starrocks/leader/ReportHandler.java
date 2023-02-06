@@ -1457,6 +1457,10 @@ public class ReportHandler extends Daemon {
 
     @Override
     protected void runOneCycle() {
+        if (Config.use_staros) {
+            return;
+        }
+
         while (true) {
             ReportTask task = null;
             try {
