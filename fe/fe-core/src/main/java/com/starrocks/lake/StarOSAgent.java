@@ -306,7 +306,7 @@ public class StarOSAgent {
         throw new UserException("Failed to get primary backend. shard id: " + shardId);
     }
 
-    // need to delete finally
+    @Deprecated
     public long getPrimaryBackendIdByShard(long shardId) throws UserException {
         List<ReplicaInfo> replicas = getShardReplicas(shardId);
 

@@ -127,7 +127,7 @@ public class OlapTableSinkTest {
             result = partition;
         }};
 
-        OlapTableSink sink = new OlapTableSink(dstTable, tuple, Lists.newArrayList(2L), TWriteQuorumType.MAJORITY, false, false);
+        OlapTableSink sink = new OlapTableSink(dstTable, tuple, Lists.newArrayList(2L), TWriteQuorumType.MAJORITY, false, false, null);
         sink.init(new TUniqueId(1, 2), 3, 4, 1000);
         sink.complete();
         LOG.info("sink is {}", sink.toThrift());
@@ -164,7 +164,12 @@ public class OlapTableSinkTest {
             result = p1;
         }};
 
+<<<<<<< HEAD
         OlapTableSink sink = new OlapTableSink(dstTable, tuple, Lists.newArrayList(p1.getId()), TWriteQuorumType.MAJORITY, false, false);
+=======
+        OlapTableSink sink = new OlapTableSink(dstTable, tuple, Lists.newArrayList(p1.getId()),
+                TWriteQuorumType.MAJORITY, false, null);
+>>>>>>> b9f1e270d6 (statistic table)
         sink.init(new TUniqueId(1, 2), 3, 4, 1000);
         try {
             sink.complete();
@@ -188,7 +193,11 @@ public class OlapTableSinkTest {
         }};
 
         OlapTableSink sink = new OlapTableSink(dstTable, tuple, Lists.newArrayList(unknownPartId),
+<<<<<<< HEAD
                 TWriteQuorumType.MAJORITY, false, false);
+=======
+                TWriteQuorumType.MAJORITY, false, null);
+>>>>>>> b9f1e270d6 (statistic table)
         sink.init(new TUniqueId(1, 2), 3, 4, 1000);
         sink.complete();
         LOG.info("sink is {}", sink.toThrift());
@@ -262,7 +271,11 @@ public class OlapTableSinkTest {
         };
 
         OlapTableSink sink = new OlapTableSink(table, null, Lists.newArrayList(partitionId), TWriteQuorumType.MAJORITY,
+<<<<<<< HEAD
                 false, false);
+=======
+                false, null);
+>>>>>>> b9f1e270d6 (statistic table)
         TOlapTableLocationParam param = (TOlapTableLocationParam) Deencapsulation.invoke(sink, "createLocation", table);
         System.out.println(param);
 
@@ -345,7 +358,11 @@ public class OlapTableSinkTest {
             }
         };
 
+<<<<<<< HEAD
         OlapTableSink sink = new OlapTableSink(table, null, Lists.newArrayList(partitionId), TWriteQuorumType.MAJORITY, true, false);
+=======
+        OlapTableSink sink = new OlapTableSink(table, null, Lists.newArrayList(partitionId), TWriteQuorumType.MAJORITY, true, null);
+>>>>>>> b9f1e270d6 (statistic table)
         TOlapTableLocationParam param = (TOlapTableLocationParam) Deencapsulation.invoke(sink, "createLocation", table);
         System.out.println(param);
 
@@ -390,7 +407,11 @@ public class OlapTableSinkTest {
         }};
 
         OlapTableSink sink = new OlapTableSink(dstTable, tuple, Lists.newArrayList(1L), TWriteQuorumType.MAJORITY,
+<<<<<<< HEAD
                 false, false);
+=======
+                false, null);
+>>>>>>> b9f1e270d6 (statistic table)
         sink.init(new TUniqueId(1, 2), 3, 4, 1000);
         sink.complete();
 
@@ -425,7 +446,11 @@ public class OlapTableSinkTest {
         }};
 
         OlapTableSink sink = new OlapTableSink(dstTable, tuple, Lists.newArrayList(1L), TWriteQuorumType.MAJORITY,
+<<<<<<< HEAD
                 false, false);
+=======
+                false, null);
+>>>>>>> b9f1e270d6 (statistic table)
         sink.init(new TUniqueId(1, 2), 3, 4, 1000);
         sink.complete();
 

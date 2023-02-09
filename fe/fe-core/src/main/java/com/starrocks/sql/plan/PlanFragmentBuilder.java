@@ -236,7 +236,7 @@ public class PlanFragmentBuilder {
         List<Long> fakePartitionIds = Arrays.asList(1L, 2L, 3L);
 
         DataSink tableSink = new OlapTableSink(view, tupleDesc, fakePartitionIds, true,
-                view.writeQuorum(), view.enableReplicatedStorage(), false);
+                view.writeQuorum(), view.enableReplicatedStorage(), false, connectContext.getCurrentWarehouse());
         execPlan.getTopFragment().setSink(tableSink);
 
         return execPlan;
@@ -643,7 +643,7 @@ public class PlanFragmentBuilder {
                 // Compatible with old tablet selected, copy from "OlapScanNode::computeTabletInfo"
                 // we can remove code when refactor tablet select
                 long localBeId = -1;
-                if (!Config.use_staros && Config.enable_local_replica_selection) {
+                if (Config.enable_local_replica_selection) {
                     localBeId = GlobalStateMgr.getCurrentSystemInfo()
                             .getBackendIdByHost(FrontendOptions.getLocalHostAddress());
                 }

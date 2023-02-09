@@ -125,14 +125,16 @@ public class OlapTableSink extends DataSink {
     private boolean abortDelete;
     private int autoIncrementSlotId;
 
+    private final String currentWarehouse;
+
     public OlapTableSink(OlapTable dstTable, TupleDescriptor tupleDescriptor, List<Long> partitionIds,
-                         TWriteQuorumType writeQuorum, boolean enableReplicatedStorage, boolean nullExprInAutoIncrement) {
-        this(dstTable, tupleDescriptor, partitionIds, true, writeQuorum, enableReplicatedStorage, nullExprInAutoIncrement);
+                         TWriteQuorumType writeQuorum, boolean enableReplicatedStorage, boolean nullExprInAutoIncrement, String currentWarehouse) {
+        this(dstTable, tupleDescriptor, partitionIds, true, writeQuorum, enableReplicatedStorage, nullExprInAutoIncrement, currentWarehouse);
     }
 
     public OlapTableSink(OlapTable dstTable, TupleDescriptor tupleDescriptor, List<Long> partitionIds,
                          boolean enablePipelineLoad, TWriteQuorumType writeQuorum, boolean enableReplicatedStorage,
-                         boolean nullExprInAutoIncrement) {
+                         boolean nullExprInAutoIncrement, String currentWarehouse) {
         this.dstTable = dstTable;
         this.tupleDescriptor = tupleDescriptor;
         Preconditions.checkState(!CollectionUtils.isEmpty(partitionIds));
@@ -155,6 +157,7 @@ public class OlapTableSink extends DataSink {
                 }
             }
         }
+        this.currentWarehouse = currentWarehouse;
     }
 
     public void init(TUniqueId loadId, long txnId, long dbId, long loadChannelTimeoutS)
@@ -462,14 +465,11 @@ public class OlapTableSink extends DataSink {
                 for (Tablet tablet : index.getTablets()) {
                     if (table.isLakeTable()) {
                         Warehouse warehouse = GlobalStateMgr.getCurrentState().getWarehouseMgr().
-                                getWarehouse(ConnectContext.get().getCurrentWarehouse());
+                                getWarehouse(currentWarehouse);
                         com.starrocks.warehouse.Cluster cluster = warehouse.getClusters().values().stream().findFirst().orElseThrow(
                                 () -> new UserException("no cluster exists in this warehouse")
                         );
                         long workerGroupId = cluster.getWorkerGroupId();
-                        // for debug
-                        LOG.info("current warehous is {}", warehouse.getFullName());
-                        LOG.info("workerGroupId is {}", workerGroupId);
                         locationParam.addToTablets(new TTabletLocation(
                                 tablet.getId(), Lists.newArrayList(((LakeTablet) tablet).getPrimaryBackendId(workerGroupId))));
                     } else {
