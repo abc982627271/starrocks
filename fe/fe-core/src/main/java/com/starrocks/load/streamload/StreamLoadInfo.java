@@ -54,6 +54,7 @@ public class StreamLoadInfo {
     private boolean stripOuterArray;
     private String jsonPaths;
     private String jsonRoot;
+    private String warehouse;
 
     // optional
     private List<ImportColumnDesc> columnExprDescs = Lists.newArrayList();
@@ -215,6 +216,10 @@ public class StreamLoadInfo {
 
     public int getLoadParallelRequestNum() {
         return loadParallelRequestNum;
+    }
+
+    public String getWarehouse() {
+        return warehouse;
     }
 
     public static StreamLoadInfo fromStreamLoadContext(TUniqueId id, long txnId, int timeout, StreamLoadParam context)
@@ -379,6 +384,10 @@ public class StreamLoadInfo {
         if (request.isSetMerge_condition()) {
             mergeConditionStr = request.getMerge_condition();
         }
+        if (request.isSetWarehouse()) {
+            warehouse = request.getWarehouse();
+        }
+
     }
 
     public static StreamLoadInfo fromRoutineLoadJob(RoutineLoadJob routineLoadJob) throws UserException {
@@ -424,6 +433,7 @@ public class StreamLoadInfo {
             compressionType = CompressionUtils.findTCompressionByName(
                     routineLoadJob.getSessionVariables().get(SessionVariable.LOAD_TRANSMISSION_COMPRESSION_TYPE));
         }
+        warehouse = routineLoadJob.getCurrentWarehouseName();
     }
 
     // used for stream load

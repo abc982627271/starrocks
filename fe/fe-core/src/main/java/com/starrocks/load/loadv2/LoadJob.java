@@ -35,6 +35,7 @@
 package com.starrocks.load.loadv2;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -142,6 +143,7 @@ public abstract class LoadJob extends AbstractTxnStateChangeCallback implements 
     // 99: all of tasks have been finished
     // 100: txn status is visible and load has been finished
     protected int progress;
+    protected String warehouseName;
 
     public int getProgress() {
         return this.progress;
@@ -237,6 +239,10 @@ public abstract class LoadJob extends AbstractTxnStateChangeCallback implements 
 
     public long getTransactionId() {
         return transactionId;
+    }
+
+    public String  getWarehouseName() {
+        return warehouseName;
     }
 
     public void initLoadProgress(TUniqueId loadId, Set<TUniqueId> fragmentIds, List<Long> relatedBackendIds) {
@@ -339,6 +345,15 @@ public abstract class LoadJob extends AbstractTxnStateChangeCallback implements 
 
             if (properties.containsKey(LoadStmt.PRIORITY)) {
                 priority = LoadPriority.priorityByName(properties.get(LoadStmt.PRIORITY));
+            }
+            if (properties.containsKey(LoadStmt.WAREHOUSE_KEY)) {
+                warehouseName = properties.get(LoadStmt.WAREHOUSE_KEY);
+                if (Strings.isNullOrEmpty(warehouseName)) {
+                    throw new DdlException("No Warehouse selected.");
+                }
+                if (ConnectContext.get() != null) {
+                    ConnectContext.get().setCurrentWarehouse(warehouseName);
+                }
             }
         }
     }

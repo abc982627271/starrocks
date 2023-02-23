@@ -413,6 +413,9 @@ Status StreamLoadAction::_process_put(HttpRequest* http_req, StreamLoadContext* 
         request.fileType = TFileType::FILE_LOCAL;
         ctx->body_sink = file_sink;
     }
+    if (!http_req->header(HTTP_WAREHOUSE_KEY).empty()) {
+        request.__set_warehouse(http_req->header(HTTP_WAREHOUSE_KEY));
+    }
     if (!http_req->header(HTTP_COLUMNS).empty()) {
         request.__set_columns(http_req->header(HTTP_COLUMNS));
     }

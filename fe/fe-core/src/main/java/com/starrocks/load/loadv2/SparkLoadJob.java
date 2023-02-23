@@ -84,6 +84,7 @@ import com.starrocks.load.loadv2.dpp.DppResult;
 import com.starrocks.load.loadv2.etl.EtlJobConfig;
 import com.starrocks.metric.TableMetricsEntity;
 import com.starrocks.metric.TableMetricsRegistry;
+import com.starrocks.qe.ConnectContext;
 import com.starrocks.qe.OriginStatement;
 import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.service.FrontendOptions;
@@ -112,6 +113,7 @@ import com.starrocks.transaction.TransactionState;
 import com.starrocks.transaction.TransactionState.LoadJobSourceType;
 import com.starrocks.transaction.TransactionState.TxnCoordinator;
 import com.starrocks.transaction.TransactionState.TxnSourceType;
+import com.starrocks.warehouse.Warehouse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -161,6 +163,7 @@ public class SparkLoadJob extends BulkLoadJob {
     private final Set<Long> finishedReplicas = Sets.newHashSet();
     private final Set<Long> quorumTablets = Sets.newHashSet();
     private final Set<Long> fullTablets = Sets.newHashSet();
+    private ConnectContext context;
 
     // only for log replay
     public SparkLoadJob() {
@@ -168,12 +171,14 @@ public class SparkLoadJob extends BulkLoadJob {
         jobType = EtlJobType.SPARK;
     }
 
-    public SparkLoadJob(long dbId, String label, ResourceDesc resourceDesc, OriginStatement originStmt)
+    public SparkLoadJob(long dbId, String label, ResourceDesc resourceDesc,
+                        OriginStatement originStmt, ConnectContext context)
             throws MetaNotFoundException {
         super(dbId, label, originStmt);
         this.resourceDesc = resourceDesc;
         timeoutSecond = Config.spark_load_default_timeout_second;
         jobType = EtlJobType.SPARK;
+        this.context = context;
     }
 
     @Override
@@ -521,7 +526,12 @@ public class SparkLoadJob extends BulkLoadJob {
 
                                 } else {
                                     // lake tablet
-                                    long backendId = ((LakeTablet) tablet).getPrimaryBackendId();
+                                    Warehouse warehouse = GlobalStateMgr.getCurrentState().getWarehouseMgr().
+                                            getWarehouse(context.getCurrentWarehouse());
+                                    com.starrocks.warehouse.Cluster cluster = warehouse.getAnyAvailableCluster();
+                                    long workerGroupId = cluster.getWorkerGroupId();
+                                    LOG.info("current warehous is {}:{}", warehouse.getFullName(), workerGroupId);
+                                    long backendId = ((LakeTablet) tablet).getPrimaryBackendId(workerGroupId);
                                     Backend backend = GlobalStateMgr.getCurrentSystemInfo().
                                             getBackend(backendId);
                                     if (backend == null) {

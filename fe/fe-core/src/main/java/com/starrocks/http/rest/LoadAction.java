@@ -35,6 +35,7 @@
 package com.starrocks.http.rest;
 
 import com.google.common.base.Strings;
+import com.starrocks.common.Config;
 import com.starrocks.common.DdlException;
 import com.starrocks.http.ActionController;
 import com.starrocks.http.BaseRequest;
@@ -46,12 +47,14 @@ import com.starrocks.qe.ConnectContext;
 import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.system.Backend;
 import com.starrocks.thrift.TNetworkAddress;
+import com.starrocks.warehouse.Warehouse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LoadAction extends RestBaseAction {
@@ -93,9 +96,24 @@ public class LoadAction extends RestBaseAction {
         } else {
             checkTblAuth(ConnectContext.get().getCurrentUserIdentity(), dbName, tableName, PrivPredicate.LOAD);
         }
-
         // Choose a backend sequentially.
-        List<Long> backendIds = GlobalStateMgr.getCurrentSystemInfo().seqChooseBackendIds(1, true, false);
+        List<Long> backendIds = new ArrayList<>();
+        if (!Config.use_staros) {
+            backendIds = GlobalStateMgr.getCurrentSystemInfo().seqChooseBackendIds(1, true, false);
+        } else {
+            // multi_cluster process
+            String warehouseName = request.getRequest().headers().get(WAEREHOUS_KEY);
+            if (Strings.isNullOrEmpty(warehouseName)) {
+                throw new DdlException("No Warehouse selected.");
+            }
+            Warehouse warehouse = GlobalStateMgr.getCurrentState().getWarehouseMgr().getWarehouse(warehouseName);
+            com.starrocks.warehouse.Cluster cluster =  warehouse.getAnyAvailableCluster();
+            long workerGroupId = cluster.getWorkerGroupId();
+            // for debug
+            LOG.info("workerGroupId is {}", workerGroupId);
+            backendIds = GlobalStateMgr.getCurrentSystemInfo().seqChooseBackendIds(1, true, false, workerGroupId);
+        }
+
         if (CollectionUtils.isEmpty(backendIds)) {
             throw new DdlException("No backend alive.");
         }

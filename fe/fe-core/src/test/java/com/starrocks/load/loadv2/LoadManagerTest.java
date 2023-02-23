@@ -249,18 +249,18 @@ public class LoadManagerTest {
 
         // spark load job
         // etl
-        LoadJob job3 = new SparkLoadJob(2L, "job3", null, null);
+        LoadJob job3 = new SparkLoadJob(2L, "job3", null, null, null);
         job3.state = JobState.ETL;
         job3.id = 13;
         Deencapsulation.invoke(loadManager, "addLoadJob", job3);
         // cancelled
-        LoadJob job4 = new SparkLoadJob(2L, "job4", null, null);
+        LoadJob job4 = new SparkLoadJob(2L, "job4", null, null, null);
         job4.finishTimestamp = currentTimeMs - 51000;
         job4.state = JobState.CANCELLED;
         job4.id = 14;
         Deencapsulation.invoke(loadManager, "addLoadJob", job4);
         // finished
-        LoadJob job42 = new SparkLoadJob(2L, "job4", null, null);
+        LoadJob job42 = new SparkLoadJob(2L, "job4", null, null, null);
         job42.finishTimestamp = currentTimeMs - 2000;
         job42.state = JobState.FINISHED;
         job42.id = 15;

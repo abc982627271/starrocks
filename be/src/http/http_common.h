@@ -73,5 +73,6 @@ static const std::string HTTP_MERGE_CONDITION = "merge_condition";
 
 static const std::string HTTP_100_CONTINUE = "100-continue";
 static const std::string HTTP_CHANNEL_ID = "channel_id";
+static const std::string HTTP_WAREHOUSE_KEY = "warehouse";
 
 } // namespace starrocks
