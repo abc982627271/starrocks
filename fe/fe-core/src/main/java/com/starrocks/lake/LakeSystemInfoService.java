@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * Backend is generated from StarOS worker.
  */
 public class LakeSystemInfoService extends SystemInfoService {
-    private final Map<Long, Long> clusterIdToLastBackendId = Maps.newHashMap();
+    private final Map<Long, Long> workGroupIdToLastBackendId = Maps.newHashMap();
     private final StarOSAgent agent;
 
     public LakeSystemInfoService(StarOSAgent agent) {
@@ -302,22 +302,22 @@ public class LakeSystemInfoService extends SystemInfoService {
     }
 
     @Override
-    public List<Long> seqChooseBackendIds(int backendNum, boolean needAvailable, boolean isCreate, long clusterId) {
-        return seqChooseBackendIds(backendNum, clusterId);
+    public List<Long> seqChooseBackendIds(int backendNum, boolean needAvailable, boolean isCreate, long workGroupId) {
+        return seqChooseBackendIds(backendNum, workGroupId);
     }
 
-    private synchronized List<Long> seqChooseBackendIds(int backendNum, long clusterId) {
+    private synchronized List<Long> seqChooseBackendIds(int backendNum, long workGroupId) {
         List<Long> backendIds = Lists.newArrayList();
 
         List<Backend> backends = null;
         try {
-            backends = agent.getWorkersByWorkerGroup(Lists.newArrayList(clusterId));
+            backends = agent.getWorkersByWorkerGroup(Lists.newArrayList(workGroupId));
         } catch (UserException e) {
             throw new SemanticException(e.getMessage());
         }
 
         // get last backend index
-        long lastBackendId = clusterIdToLastBackendId.getOrDefault(clusterId, -1L);
+        long lastBackendId = workGroupIdToLastBackendId.getOrDefault(workGroupId, -1L);
         int lastBackendIndex = -1;
         int index = -1;
         for (Backend backend : backends) {
@@ -354,7 +354,7 @@ public class LakeSystemInfoService extends SystemInfoService {
         }
 
         if (backendIds.size() == backendNum) {
-            clusterIdToLastBackendId.put(clusterId, lastBackendId);
+            workGroupIdToLastBackendId.put(workGroupId, lastBackendId);
             return backendIds;
         }
         return Lists.newArrayList();

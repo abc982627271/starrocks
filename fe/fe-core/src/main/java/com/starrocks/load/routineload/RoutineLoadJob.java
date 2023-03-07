@@ -246,6 +246,7 @@ public abstract class RoutineLoadJob extends AbstractTxnStateChangeCallback impl
     // this is the origin stmt of CreateRoutineLoadStmt, we use it to persist the RoutineLoadJob,
     // because we can not serialize the Expressions contained in job.
     protected OriginStatement origStmt;
+    private String currentWarehouseName;
 
     protected ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
     // TODO(ml): error sample
@@ -302,6 +303,9 @@ public abstract class RoutineLoadJob extends AbstractTxnStateChangeCallback impl
         jobProperties.put(LoadStmt.PARTIAL_UPDATE, String.valueOf(stmt.isPartialUpdate()));
         jobProperties.put(LoadStmt.TIMEZONE, stmt.getTimezone());
         jobProperties.put(LoadStmt.STRICT_MODE, String.valueOf(stmt.isStrictMode()));
+        if (!Strings.isNullOrEmpty(stmt.getWarehouseName())) {
+            this.currentWarehouseName = stmt.getWarehouseName();
+        }
         if (stmt.getMergeConditionStr() != null) {
             jobProperties.put(LoadStmt.MERGE_CONDITION, stmt.getMergeConditionStr());
         }
@@ -526,6 +530,10 @@ public abstract class RoutineLoadJob extends AbstractTxnStateChangeCallback impl
 
     public boolean isStripOuterArray() {
         return Boolean.valueOf(jobProperties.get(PROPS_STRIP_OUTER_ARRAY));
+    }
+
+    public String getCurrentWarehouseName() {
+        return currentWarehouseName;
     }
 
     public String getJsonPaths() {

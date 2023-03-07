@@ -92,6 +92,7 @@ public class CreateRoutineLoadStmt extends DdlStmt {
     public static final String DESIRED_CONCURRENT_NUMBER_PROPERTY = "desired_concurrent_number";
     // max error number in ten thousand records
     public static final String MAX_ERROR_NUMBER_PROPERTY = "max_error_number";
+    public static final String WAREHOUSE_KEY = "warehouse";
 
     public static final String MAX_BATCH_INTERVAL_SEC_PROPERTY = "max_batch_interval";
     public static final String MAX_BATCH_ROWS_PROPERTY = "max_batch_rows";
@@ -133,6 +134,7 @@ public class CreateRoutineLoadStmt extends DdlStmt {
             .add(JSONPATHS)
             .add(STRIP_OUTER_ARRAY)
             .add(JSONROOT)
+            .add(WAREHOUSE_KEY)
             .add(LoadStmt.STRICT_MODE)
             .add(LoadStmt.TIMEZONE)
             .add(LoadStmt.PARTIAL_UPDATE)
@@ -160,6 +162,7 @@ public class CreateRoutineLoadStmt extends DdlStmt {
     private final Map<String, String> jobProperties;
     private final String typeName;
     private final Map<String, String> dataSourceProperties;
+    private String warehouseName;
 
     // the following variables will be initialized after analyze
     // -1 as unset, the default value will set in RoutineLoadJob
@@ -361,8 +364,11 @@ public class CreateRoutineLoadStmt extends DdlStmt {
         return dataSourceProperties;
     }
 
-    public static RoutineLoadDesc getLoadDesc(OriginStatement origStmt, Map<String, String> sessionVariables) {
+    public String getWarehouseName() {
+        return warehouseName;
+    }
 
+    public static RoutineLoadDesc getLoadDesc(OriginStatement origStmt, Map<String, String> sessionVariables) {
         // parse the origin stmt to get routine load desc
         try {
             List<StatementBase> stmts = com.starrocks.sql.parser.SqlParser.parse(
@@ -484,6 +490,12 @@ public class CreateRoutineLoadStmt extends DdlStmt {
             }
         } else {
             format = "csv"; // default csv
+        }
+        if (Config.use_staros) {
+            warehouseName = jobProperties.get(WAREHOUSE_KEY);
+            if (Strings.isNullOrEmpty(warehouseName)) {
+                throw new UserException("No Warehouse selected.");
+            }
         }
     }
 

@@ -58,6 +58,7 @@ public class RestBaseAction extends BaseAction {
     protected static final String DB_KEY = "db";
     protected static final String TABLE_KEY = "table";
     protected static final String LABEL_KEY = "label";
+    protected static final String WAEREHOUS_KEY = "warehouse";
     private static final Logger LOG = LogManager.getLogger(RestBaseAction.class);
 
     public RestBaseAction(ActionController controller) {

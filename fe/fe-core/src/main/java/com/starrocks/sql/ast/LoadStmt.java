@@ -34,9 +34,11 @@
 
 package com.starrocks.sql.ast;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.starrocks.analysis.BrokerDesc;
 import com.starrocks.analysis.LabelName;
+import com.starrocks.common.Config;
 import com.starrocks.common.DdlException;
 import com.starrocks.common.util.LoadPriority;
 import com.starrocks.common.util.TimeUtils;
@@ -88,6 +90,7 @@ public class LoadStmt extends DdlStmt {
     public static final String PARTIAL_UPDATE = "partial_update";
     public static final String PRIORITY = "priority";
     public static final String MERGE_CONDITION = "merge_condition";
+    public static final String WAREHOUSE_KEY = "warehouse";
 
     // for load data from Baidu Object Store(BOS)
     public static final String BOS_ENDPOINT = "bos_endpoint";
@@ -125,6 +128,7 @@ public class LoadStmt extends DdlStmt {
             .add(TIMEZONE)
             .add(PARTIAL_UPDATE)
             .add(PRIORITY)
+            .add(WAREHOUSE_KEY)
             .build();
 
     public LoadStmt(LabelName label, List<DataDescription> dataDescriptions,
@@ -191,7 +195,11 @@ public class LoadStmt extends DdlStmt {
 
     public static void checkProperties(Map<String, String> properties) throws DdlException {
         if (properties == null) {
-            return;
+            if (Config.use_staros) {
+                throw new DdlException("No Warehouse selected.");
+            } else {
+                return;
+            }
         }
 
         for (Entry<String, String> entry : properties.entrySet()) {
@@ -268,6 +276,10 @@ public class LoadStmt extends DdlStmt {
             if (LoadPriority.priorityByName(priorityProperty) == null) {
                 throw new DdlException(PRIORITY + " should in HIGHEST/HIGH/NORMAL/LOW/LOWEST");
             }
+        }
+        final String warehouseName = properties.get(WAREHOUSE_KEY);
+        if (Strings.isNullOrEmpty(warehouseName)) {
+            throw new DdlException("No Warehouse selected.");
         }
     }
 
