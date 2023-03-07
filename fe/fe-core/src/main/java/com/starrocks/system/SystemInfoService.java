@@ -44,9 +44,6 @@ import com.starrocks.common.DdlException;
 import com.starrocks.common.Pair;
 import com.starrocks.common.Status;
 import com.starrocks.qe.ShowResultSet;
-import com.starrocks.qe.ShowResultSetMetaData;
-import com.starrocks.server.GlobalStateMgr;
-import com.starrocks.server.RunMode;
 import com.starrocks.service.FrontendOptions;
 import com.starrocks.sql.ast.DropBackendClause;
 import com.starrocks.sql.ast.ModifyBackendAddressClause;
@@ -60,7 +57,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * abstract SystemInfoService.

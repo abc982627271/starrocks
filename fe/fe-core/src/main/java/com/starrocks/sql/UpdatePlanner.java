@@ -104,7 +104,8 @@ public class UpdatePlanner {
                 }
                 DataSink dataSink =
                         new OlapTableSink(((OlapTable) table), olapTuple, partitionIds, ((OlapTable) table).writeQuorum(),
-                                ((OlapTable) table).enableReplicatedStorage(), updateStmt.nullExprInAutoIncrement(), session.getCurrentWarehouse());
+                                ((OlapTable) table).enableReplicatedStorage(), updateStmt.nullExprInAutoIncrement(), 
+                                session.getCurrentWarehouse());
                 execPlan.getFragments().get(0).setSink(dataSink);
                 execPlan.getFragments().get(0).setLoadGlobalDicts(globalDicts);
             } else if (table instanceof SchemaTable) {
