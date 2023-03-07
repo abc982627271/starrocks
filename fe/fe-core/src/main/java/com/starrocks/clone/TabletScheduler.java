@@ -67,6 +67,7 @@ import com.starrocks.common.Pair;
 import com.starrocks.common.util.LeaderDaemon;
 import com.starrocks.persist.ReplicaPersistInfo;
 import com.starrocks.server.GlobalStateMgr;
+import com.starrocks.server.RunMode;
 import com.starrocks.system.Backend;
 import com.starrocks.system.SystemInfoService;
 import com.starrocks.task.AgentBatchTask;

@@ -971,7 +971,12 @@ public class AlterTest {
     public void testAddPartitionForLakeTable(@Mocked StarOSAgent agent,
                                              @Mocked WarehouseManager warehouseMgr,
                                              @Mocked Warehouse warehouse) throws Exception {
-        Config.use_staros = true;
+        new MockUp<RunMode>() {
+            @Mock
+            public RunMode getCurrentRunMode() {
+                return RunMode.SHARED_DATA;
+            }
+        };
 
         FilePathInfo.Builder builder = FilePathInfo.newBuilder();
         FileStoreInfo.Builder fsBuilder = builder.getFsInfoBuilder();
@@ -1070,7 +1075,12 @@ public class AlterTest {
     public void testMultiRangePartitionForLakeTable(@Mocked StarOSAgent agent,
                                                     @Mocked WarehouseManager warehouseMgr,
                                                     @Mocked Warehouse warehouse) throws Exception {
-        Config.use_staros = true;
+        new MockUp<RunMode>() {
+            @Mock
+            public RunMode getCurrentRunMode() {
+                return RunMode.SHARED_DATA;
+            }
+        };
 
         FilePathInfo.Builder builder = FilePathInfo.newBuilder();
         FileStoreInfo.Builder fsBuilder = builder.getFsInfoBuilder();
@@ -2032,7 +2042,12 @@ public class AlterTest {
     public void testSingleRangePartitionPersistInfo(@Mocked StarOSAgent agent,
                                                     @Mocked WarehouseManager warehouseMgr,
                                                     @Mocked Warehouse warehouse) throws Exception {
-        Config.use_staros = true;
+        new MockUp<RunMode>() {
+            @Mock
+            public RunMode getCurrentRunMode() {
+                return RunMode.SHARED_DATA;
+            }
+        };
 
         FilePathInfo.Builder builder = FilePathInfo.newBuilder();
         FileStoreInfo.Builder fsBuilder = builder.getFsInfoBuilder();

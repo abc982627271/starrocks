@@ -202,7 +202,7 @@ public class ReportHandlerTest {
         Backend be = new Backend(10001, "host1", 8000);
         ComputeNode cn = new ComputeNode(10002, "host2", 8000);
 
-        new MockUp<SystemInfoService>() {
+        new MockUp<LocalSystemInfoService>() {
             @Mock
             public Backend getBackendWithBePort(String host, int bePort) {
                 if (host.equals(be.getHost()) && bePort == be.getBePort()) {

@@ -43,6 +43,7 @@ import com.starrocks.common.ErrorReport;
 import com.starrocks.qe.ConnectContext;
 import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.server.MetadataMgr;
+import com.starrocks.server.RunMode;
 import com.starrocks.sql.ast.AstVisitor;
 import com.starrocks.sql.ast.CTERelation;
 import com.starrocks.sql.ast.ExceptRelation;

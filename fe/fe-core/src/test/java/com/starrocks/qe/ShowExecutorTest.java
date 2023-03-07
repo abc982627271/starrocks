@@ -98,6 +98,7 @@ import com.starrocks.system.Backend;
 import com.starrocks.system.BackendCoreStat;
 import com.starrocks.system.ComputeNode;
 import com.starrocks.system.LocalSystemInfoService;
+import com.starrocks.system.SystemInfoService;
 import com.starrocks.thrift.TStorageType;
 import mockit.Expectations;
 import mockit.Mock;

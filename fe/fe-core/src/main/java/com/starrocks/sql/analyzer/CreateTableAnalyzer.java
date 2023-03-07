@@ -36,6 +36,7 @@ import com.starrocks.common.FeConstants;
 import com.starrocks.common.util.PropertyAnalyzer;
 import com.starrocks.external.elasticsearch.EsUtil;
 import com.starrocks.qe.ConnectContext;
+import com.starrocks.server.RunMode;
 import com.starrocks.sql.ast.CreateTableStmt;
 import com.starrocks.sql.ast.DistributionDesc;
 import com.starrocks.sql.ast.ExpressionPartitionDesc;
@@ -116,7 +117,7 @@ public class CreateTableAnalyzer {
         final String tableName = tableNameObject.getTbl();
         final String dbName = tableNameObject.getDb();
 
-        if (RunMode.getCurrentRunMode() == RunMode.SHARED_DATA && 
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_DATA &&
                 context.getCurrentWarehouse() == null &&
                 !isStatisticsTable(dbName, tableName)) {
             throw new SemanticException("No warehouse selected");

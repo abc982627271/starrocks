@@ -44,7 +44,6 @@ import com.starrocks.common.FeConstants;
 import com.starrocks.persist.EditLog;
 import com.starrocks.qe.ConnectContext;
 import com.starrocks.server.GlobalStateMgr;
-import com.starrocks.server.RunMode;
 import com.starrocks.sql.ast.AddBackendClause;
 import com.starrocks.sql.ast.AlterSystemStmt;
 import com.starrocks.sql.ast.DropBackendClause;
@@ -270,33 +269,6 @@ public class SystemInfoServiceTest {
         } catch (DdlException e) {
             Assert.assertTrue(e.getMessage().contains("does not exist"));
         }
-
-        new MockUp<RunMode>() {
-            @Mock
-            public RunMode getCurrentRunMode() {
-                return RunMode.SHARED_DATA;
-            }
-        };
-
-        StarOSAgent starosAgent = new StarOSAgent();
-        new Expectations(starosAgent) {
-            {
-                try {
-                    starosAgent.removeWorker("192.168.0.1:1235");
-                    minTimes = 0;
-                    result = null;
-                } catch (DdlException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        new MockUp<GlobalStateMgr>() {
-            @Mock
-            StarOSAgent getStarOSAgent() {
-                return starosAgent;
-            }
-        };
 
         AddBackendClause stmt2 = new AddBackendClause(Lists.newArrayList("192.168.0.1:1235"));
         com.starrocks.sql.analyzer.Analyzer.analyze(new AlterSystemStmt(stmt2), new ConnectContext(null));

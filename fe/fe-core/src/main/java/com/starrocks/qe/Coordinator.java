@@ -66,6 +66,7 @@ import com.starrocks.qe.QueryStatisticsItem.FragmentInstanceInfo;
 import com.starrocks.rpc.BackendServiceClient;
 import com.starrocks.rpc.RpcException;
 import com.starrocks.server.GlobalStateMgr;
+import com.starrocks.server.RunMode;
 import com.starrocks.sql.LoadPlanner;
 import com.starrocks.sql.PlannerProfile;
 import com.starrocks.sql.ast.UserIdentity;

@@ -26,6 +26,7 @@ import com.starrocks.catalog.OlapTable;
 import com.starrocks.catalog.Partition;
 import com.starrocks.catalog.Table;
 import com.starrocks.qe.ConnectContext;
+import com.starrocks.server.RunMode;
 import com.starrocks.sql.ast.DefaultValueExpr;
 import com.starrocks.sql.ast.InsertStmt;
 import com.starrocks.sql.ast.PartitionNames;
