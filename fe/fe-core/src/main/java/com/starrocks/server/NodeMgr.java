@@ -134,7 +134,8 @@ public class NodeMgr {
         this.leaderRpcPort = 0;
         this.leaderHttpPort = 0;
         this.leaderIp = "";
-        this.systemInfo = Config.use_staros ? new LakeSystemInfoService(globalStateMgr.getStarOSAgent()) :
+        this.systemInfo = RunMode.getCurrentRunMode() == RunMode.SHARED_DATA ? 
+                new LakeSystemInfoService(globalStateMgr.getStarOSAgent()) :
                 new LocalSystemInfoService();
         this.heartbeatMgr = new HeartbeatMgr(systemInfo, !isCheckpoint);
         this.brokerMgr = new BrokerMgr();
@@ -182,7 +183,8 @@ public class NodeMgr {
     public SystemInfoService getOrCreateSystemInfo(Integer clusterId) {
         SystemInfoService systemInfoService = systemInfoMap.get(clusterId);
         if (systemInfoService == null) {
-            systemInfoService = Config.use_staros ? new LakeSystemInfoService(this.stateMgr.getStarOSAgent()) :
+            systemInfoService = RunMode.getCurrentRunMode() == RunMode.SHARED_DATA ? 
+                    new LakeSystemInfoService(this.stateMgr.getStarOSAgent()) :
                     new LocalSystemInfoService();
             systemInfoMap.put(clusterId, systemInfoService);
         }

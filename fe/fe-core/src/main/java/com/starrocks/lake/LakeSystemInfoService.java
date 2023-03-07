@@ -144,6 +144,11 @@ public class LakeSystemInfoService extends SystemInfoService {
     }
 
     @Override
+    public ComputeNode getBackendOrComputeNode(long nodeId) {
+        return getBackend(nodeId);
+    }
+
+    @Override
     public boolean checkBackendAvailable(long backendId) {
         try {
             Backend backend = agent.getWorkerById(backendId);

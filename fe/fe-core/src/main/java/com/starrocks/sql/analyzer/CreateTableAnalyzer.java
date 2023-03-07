@@ -116,7 +116,8 @@ public class CreateTableAnalyzer {
         final String tableName = tableNameObject.getTbl();
         final String dbName = tableNameObject.getDb();
 
-        if (Config.use_staros && context.getCurrentWarehouse() == null &&
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_DATA && 
+                context.getCurrentWarehouse() == null &&
                 !isStatisticsTable(dbName, tableName)) {
             throw new SemanticException("No warehouse selected");
         }
@@ -317,12 +318,6 @@ public class CreateTableAnalyzer {
                 }
             }
             distributionDesc.analyze(columnSet);
-            if (statement.isLakeEngine()) {
-                int bucketNum = distributionDesc.getBuckets();
-                if (bucketNum == 0) {
-                    throw new SemanticException("Create lake table should specify bucket number");
-                }
-            }
 
             statement.setDistributionDesc(distributionDesc);
             statement.setProperties(properties);

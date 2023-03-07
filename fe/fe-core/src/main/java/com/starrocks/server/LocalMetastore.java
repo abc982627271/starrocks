@@ -773,7 +773,7 @@ public class LocalMetastore implements ConnectorMetadata {
         }
 
         // only internal table should check quota and cluster capacity
-        if (!stmt.isExternal() && !stmt.isLakeEngine()) {
+        if (!stmt.isExternal()) {
             // check cluster capacity
             systemInfoService.checkClusterCapacity();
             // check db quota
@@ -4517,23 +4517,11 @@ public class LocalMetastore implements ConnectorMetadata {
 
     public void initDefaultCluster() {
         final List<Long> backendList = Lists.newArrayList();
-        if (!Config.use_staros) {
-            final List<Backend> defaultClusterBackends = systemInfoService.getBackends();
-            for (Backend backend : defaultClusterBackends) {
-                backendList.add(backend.getId());
-            }
-            // make sure one host hold only one backend.
-            Set<String> beHost = Sets.newHashSet();
-            for (Backend be : defaultClusterBackends) {
-                if (beHost.contains(be.getHost())) {
-                    // we can not handle this situation automatically.
-                    LOG.error("found more than one backends in same host: {}", be.getHost());
-                    System.exit(-1);
-                } else {
-                    beHost.add(be.getHost());
-                }
-            }
+        final List<Backend> defaultClusterBackends = systemInfoService.getBackends();
+        for (Backend backend : defaultClusterBackends) {
+            backendList.add(backend.getId());
         }
+
 
         final long id = getNextId();
         final Cluster cluster = new Cluster(SystemInfoService.DEFAULT_CLUSTER, id);

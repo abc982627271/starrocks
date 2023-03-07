@@ -343,7 +343,7 @@ public class TabletScheduler extends LeaderDaemon {
      */
     @Override
     protected void runAfterCatalogReady() {
-        if (Config.use_staros) {
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_DATA) {
             return;
         }
 

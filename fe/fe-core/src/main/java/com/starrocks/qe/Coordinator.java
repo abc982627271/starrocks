@@ -43,7 +43,6 @@ import com.google.common.collect.Sets;
 import com.starrocks.analysis.DescriptorTable;
 import com.starrocks.authentication.AuthenticationManager;
 import com.starrocks.catalog.FsBroker;
-import com.starrocks.common.Config;
 import com.starrocks.common.MarkedCountDownLatch;
 import com.starrocks.common.Pair;
 import com.starrocks.common.Status;
@@ -1863,7 +1862,7 @@ public class Coordinator {
         }
 
         public boolean isBackendStateHealthy() {
-            if (Config.use_staros) {
+            if (RunMode.getCurrentRunMode() == RunMode.SHARED_DATA) {
                 // get worker state from SystemInfo Service
                 return GlobalStateMgr.getCurrentSystemInfo().checkWorkerHealthy(backend.getId());
             }

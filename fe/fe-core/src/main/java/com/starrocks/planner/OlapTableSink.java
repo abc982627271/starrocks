@@ -533,27 +533,8 @@ public class OlapTableSink extends DataSink {
         }
 
         return locationParam;
-        }
-
-    private TNodesInfo createStarrocksNodesInfo() throws UserException {
-        TNodesInfo nodesInfo = new TNodesInfo();
-        SystemInfoService systemInfoService = GlobalStateMgr.getCurrentState().getOrCreateSystemInfo(clusterId);
-        try {
-            String currentWarehouseName = ConnectContext.get().getCurrentWarehouse();
-            Warehouse warehouse = GlobalStateMgr.getCurrentState().getWarehouseMgr().getWarehouse(currentWarehouseName);
-            com.starrocks.warehouse.Cluster cluster = warehouse.getClusters().values().stream().findFirst().orElseThrow(
-                    () -> new UserException("no cluster exists in this warehouse")
-            );
-            long workerGroupId = cluster.getWorkerGroupId();
-            for (Backend backend : systemInfoService.getBackends(workerGroupId))  {
-                nodesInfo.addToNodes(new TNodeInfo(backend.getId(), 0, backend.getHost(), backend.getBrpcPort()));
-            }
-        } catch (UserException e) {
-            throw e;
-        }
-        return nodesInfo;
     }
-
+    
     public boolean canUsePipeLine() {
         return Config.enable_pipeline_load && enablePipelineLoad;
     }

@@ -455,6 +455,15 @@ public class LocalSystemInfoService extends SystemInfoService {
     }
 
     @Override
+    public ComputeNode getBackendOrComputeNode(long nodeId) {
+        ComputeNode backend = idToBackendRef.get(nodeId);
+        if (backend == null) {
+            backend = idToComputeNodeRef.get(nodeId);
+        }
+        return backend;
+    }
+
+    @Override
     public boolean checkBackendAvailable(long backendId) {
         Backend backend = idToBackendRef.get(backendId);
         return backend != null && backend.isAvailable();

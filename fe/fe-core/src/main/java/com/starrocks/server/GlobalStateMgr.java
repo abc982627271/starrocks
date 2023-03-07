@@ -635,11 +635,6 @@ public class GlobalStateMgr {
         this.metaContext = new MetaContext();
         this.metaContext.setThreadLocalInfo();
 
-        // starOSAgent is used in LakeSystemInfoService and must be newed before NodeMgr
-        if (Config.use_staros) {
-            this.starOSAgent = new StarOSAgent();
-        }
-
         this.nodeMgr = new NodeMgr(isCkptGlobalState, this);
         this.globalFunctionMgr = new GlobalFunctionMgr();
         this.stat = new TabletSchedulerStat();

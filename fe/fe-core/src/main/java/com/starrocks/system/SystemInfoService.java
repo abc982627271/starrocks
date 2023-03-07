@@ -57,6 +57,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * abstract SystemInfoService.
@@ -104,6 +105,8 @@ public abstract class SystemInfoService {
     public abstract Boolean checkWorkerHealthy(long workerId);
 
     public abstract ComputeNode getComputeNode(long computeNodeId);
+
+    public abstract ComputeNode getBackendOrComputeNode(long nodeId);
 
     public abstract boolean checkBackendAvailable(long backendId);
 
@@ -188,6 +191,10 @@ public abstract class SystemInfoService {
     public abstract long loadComputeNodes(DataInputStream dis, long checksum) throws IOException;
 
     public abstract void clear();
+
+    public Stream<ComputeNode> backendAndComputeNodeStream() {
+        return Stream.concat(getIdToBackend().values().stream(), getIdComputeNode().values().stream());
+    }
 
     public static Pair<String, Integer> validateHostAndPort(String hostPort) throws AnalysisException {
         hostPort = hostPort.replaceAll("\\s+", "");

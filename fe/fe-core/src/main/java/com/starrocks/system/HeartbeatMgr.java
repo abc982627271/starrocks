@@ -135,7 +135,7 @@ public class HeartbeatMgr extends LeaderDaemon {
         }
 
         // send compute node heartbeat
-        if (!Config.use_staros) {
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
             for (ComputeNode computeNode : nodeMgr.getIdComputeNode().values()) {
                 BackendHeartbeatHandler handler = new BackendHeartbeatHandler(computeNode);
                 hbResponses.add(executor.submit(handler));
@@ -236,15 +236,6 @@ public class HeartbeatMgr extends LeaderDaemon {
                         if (!isReplay && !computeNode.isAlive()) {
                             GlobalStateMgr.getCurrentState().getGlobalTransactionMgr()
                                     .abortTxnWhenCoordinateBeDown(computeNode.getHost(), 100);
-                        }
-                    } else {
-                        if (RunMode.allowCreateLakeTable() && !isReplay) {
-                            // addWorker
-                            int starletPort = computeNode.getStarletPort();
-                            if (starletPort != 0) {
-                                String workerAddr = computeNode.getHost() + ":" + starletPort;
-                                GlobalStateMgr.getCurrentState().getStarOSAgent().addWorker(computeNode.getId(), workerAddr);
-                            }
                         }
                     }
                     return isChanged;
@@ -447,7 +438,7 @@ public class HeartbeatMgr extends LeaderDaemon {
     }
 
     public void replayHearbeat(HbPackage hbPackage) {
-        if (Config.use_staros) {
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_DATA) {
             return;
         }
         for (HeartbeatResponse hbResult : hbPackage.getHbResults()) {

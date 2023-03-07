@@ -193,13 +193,7 @@ public class BackendsProcDir implements ProcDirInterface {
             double memUsedPct = backend.getMemUsedPct();
             backendInfo.add(String.format("%.2f", memUsedPct * 100) + " %");
             backendInfo.add(String.format("%.1f", backend.getCpuUsedPermille() / 10.0) + " %");
-
-            if (RunMode.allowCreateLakeTable()) {
-                backendInfo.add(String.valueOf(backend.getStarletPort()));
-                long workerId = GlobalStateMgr.getCurrentState().getStarOSAgent().getWorkerIdByBackendId(backendId);
-                backendInfo.add(String.valueOf(workerId));
-            }
-
+            
             comparableBackendInfos.add(backendInfo);
         }
 
