@@ -472,10 +472,3 @@ public class LakeSystemInfoService extends SystemInfoService {
     public void updatePathInfo(List<DiskInfo> addedDisks, List<DiskInfo> removedDisks) {
     }
 }
-}
-
-    @Override
-    public void updatePathInfo(List<DiskInfo> addedDisks, List<DiskInfo> removedDisks) {
-        throw new SemanticException("not implemented");
-    }
-}
