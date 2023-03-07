@@ -141,6 +141,16 @@ public class LocalSystemInfoService extends SystemInfoService {
         return null;
     }
 
+    /**
+     * For test.
+     */
+    @Override
+    public void addComputeNode(ComputeNode computeNode) {
+        Map<Long, ComputeNode> copiedComputeNodes = Maps.newHashMap(idToComputeNodeRef);
+        copiedComputeNodes.put(computeNode.getId(), computeNode);
+        idToComputeNodeRef = ImmutableMap.copyOf(copiedComputeNodes);
+    }
+
     // Final entry of adding compute node
     private void addComputeNode(String host, int heartbeatPort) throws DdlException {
         ComputeNode newComputeNode = new ComputeNode(GlobalStateMgr.getCurrentState().getNextId(), host, heartbeatPort);

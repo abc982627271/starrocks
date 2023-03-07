@@ -100,6 +100,11 @@ public abstract class SystemInfoService {
     // only for test
     public abstract void dropAllBackend();
 
+    /**
+     * For test.
+     */
+    public abstract void addComputeNode(ComputeNode computeNode);
+
     public abstract Backend getBackend(long backendId);
 
     public abstract Boolean checkWorkerHealthy(long workerId);

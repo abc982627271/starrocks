@@ -121,6 +121,11 @@ public class LakeSystemInfoService extends SystemInfoService {
     }
 
     @Override
+    public void addComputeNode(ComputeNode computeNode) {
+        throw new SemanticException("not implemented");
+    }
+
+    @Override
     public Backend getBackend(long backendId) {
         try {
             return agent.getWorkerById(backendId);
