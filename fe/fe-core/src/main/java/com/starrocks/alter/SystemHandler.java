@@ -144,8 +144,11 @@ public class SystemHandler extends AlterHandler {
         } else if (alterClause instanceof ModifyBackendAddressClause) {
             // update Backend Address
             ModifyBackendAddressClause modifyBackendAddressClause = (ModifyBackendAddressClause) alterClause;
-            return GlobalStateMgr.getCurrentSystemInfo().modifyDataNodeHost(modifyBackendAddressClause);
-            // TODO: modify compute node in SHARED_NOTHING RunMode
+            // modify data node host in SHARED_NOTHING RunMode
+            if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
+                return GlobalStateMgr.getCurrentSystemInfo().modifyDataNodeHost(modifyBackendAddressClause);
+            }
+            // TODO: modify compute node host
 
         } else if (alterClause instanceof DropBackendClause) {
             // drop backend
