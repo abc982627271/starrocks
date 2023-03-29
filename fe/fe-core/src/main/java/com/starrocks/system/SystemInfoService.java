@@ -347,7 +347,7 @@ public class SystemInfoService {
 
     // for decommission
     public void dropDataNode(long backendId) throws DdlException {
-        DataNode backend = getBackend(backendId);
+        DataNode backend = getDataNode(backendId);
         if (backend == null) {
             throw new DdlException("Backend[" + backendId + "] does not exist");
         }
@@ -452,8 +452,8 @@ public class SystemInfoService {
         idToReportVersionRef = ImmutableMap.<Long, AtomicLong>of();
     }
 
-    public DataNode getBackend(long backendId) {
-        return idToBackendRef.get(backendId);
+    public DataNode getDataNode(long dataNodeId) {
+        return idToBackendRef.get(dataNodeId);
     }
 
     public ComputeNode getComputeNode(long computeNodeId) {
@@ -617,7 +617,7 @@ public class SystemInfoService {
         } else {
             Iterator<Long> iter = backendIds.iterator();
             while (iter.hasNext()) {
-                DataNode backend = this.getBackend(iter.next());
+                DataNode backend = this.getDataNode(iter.next());
                 if (backend == null || !backend.isAlive()) {
                     iter.remove();
                 }
@@ -632,7 +632,7 @@ public class SystemInfoService {
 
         Iterator<Long> iter = backendIds.iterator();
         while (iter.hasNext()) {
-            DataNode backend = this.getBackend(iter.next());
+            DataNode backend = this.getDataNode(iter.next());
             if (backend == null || !backend.isDecommissioned()) {
                 iter.remove();
             }
@@ -646,7 +646,7 @@ public class SystemInfoService {
 
         Iterator<Long> iter = backendIds.iterator();
         while (iter.hasNext()) {
-            DataNode backend = this.getBackend(iter.next());
+            DataNode backend = this.getDataNode(iter.next());
             if (backend == null || !backend.isAvailable()) {
                 iter.remove();
             }
@@ -1042,7 +1042,7 @@ public class SystemInfoService {
 
     public void updateBackendState(DataNode be) {
         long id = be.getId();
-        DataNode memoryBe = getBackend(id);
+        DataNode memoryBe = getDataNode(id);
         if (memoryBe == null) {
             // backend may already be dropped. this may happen when
             // 1. SystemHandler drop the decommission backend

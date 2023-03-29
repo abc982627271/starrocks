@@ -235,7 +235,7 @@ public class SystemInfoServiceTest {
             Assert.assertTrue(e.getMessage().contains("already exists"));
         }
 
-        Assert.assertNotNull(GlobalStateMgr.getCurrentSystemInfo().getBackend(backendId));
+        Assert.assertNotNull(GlobalStateMgr.getCurrentSystemInfo().getDataNode(backendId));
         Assert.assertNotNull(GlobalStateMgr.getCurrentSystemInfo().getBackendWithHeartbeatPort("192.168.0.1", 1234));
 
         Assert.assertTrue(GlobalStateMgr.getCurrentSystemInfo().getTotalBackendNumber() == 1);
@@ -348,7 +348,7 @@ public class SystemInfoServiceTest {
         long checksum2 = systemInfoService.loadBackends(dis, 0);
         Assert.assertEquals(checksum1, checksum2);
         Assert.assertEquals(1, systemInfoService.getIdToBackend().size());
-        DataNode back2 = systemInfoService.getBackend(1);
+        DataNode back2 = systemInfoService.getDataNode(1);
         Assert.assertTrue(back1.equals(back2));
         dis.close();
 

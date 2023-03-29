@@ -99,7 +99,7 @@ public class SystemHandler extends AlterHandler {
         TabletInvertedIndex invertedIndex = GlobalStateMgr.getCurrentInvertedIndex();
         // check if decommission is finished
         for (Long beId : systemInfoService.getBackendIds(false)) {
-            DataNode backend = systemInfoService.getBackend(beId);
+            DataNode backend = systemInfoService.getDataNode(beId);
             if (backend == null || !backend.isDecommissioned()) {
                 continue;
             }

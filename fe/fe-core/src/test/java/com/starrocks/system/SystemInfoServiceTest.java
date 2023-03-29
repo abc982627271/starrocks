@@ -115,7 +115,7 @@ public class SystemInfoServiceTest {
         DataNode be = new DataNode(10001, "newHost", 1000);
         service.addBackend(be);
         service.updateBackendState(be);
-        DataNode newBe = service.getBackend(10001);
+        DataNode newBe = service.getDataNode(10001);
         Assert.assertTrue(newBe.getHost().equals("newHost"));
     }
 

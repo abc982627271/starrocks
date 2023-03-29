@@ -243,7 +243,7 @@ public class UtFrameUtils {
 
             // sleep to wait first heartbeat
             int retry = 0;
-            while (GlobalStateMgr.getCurrentSystemInfo().getBackend(10001).getBePort() == -1 &&
+            while (GlobalStateMgr.getCurrentSystemInfo().getDataNode(10001).getBePort() == -1 &&
                     retry++ < 600) {
                 Thread.sleep(100);
             }
