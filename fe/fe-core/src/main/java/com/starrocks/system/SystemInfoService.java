@@ -185,7 +185,7 @@ public class SystemInfoService {
      * @param hostPortPairs : backend's host and port
      * @throws DdlException
      */
-    public void addBackends(List<Pair<String, Integer>> hostPortPairs) throws DdlException {
+    public void addDataNodes(List<Pair<String, Integer>> hostPortPairs) throws DdlException {
         for (Pair<String, Integer> pair : hostPortPairs) {
             // check is already exist
             if (getBackendWithHeartbeatPort(pair.first, pair.second) != null) {
