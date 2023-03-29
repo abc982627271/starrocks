@@ -15,8 +15,8 @@
 package com.starrocks.transaction;
 
 import com.starrocks.common.Config;
-import com.starrocks.pseudocluster.PseudoDataNode;
 import com.starrocks.pseudocluster.PseudoCluster;
+import com.starrocks.pseudocluster.PseudoDataNode;
 import com.starrocks.pseudocluster.Tablet;
 import org.junit.AfterClass;
 import org.junit.Assert;

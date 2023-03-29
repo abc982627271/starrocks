@@ -15,9 +15,9 @@
 package com.starrocks.clone;
 
 import com.starrocks.common.Config;
-import com.starrocks.pseudocluster.PseudoDataNode;
 import com.starrocks.pseudocluster.PseudoCluster;
 import com.starrocks.pseudocluster.PseudoClusterUtils;
+import com.starrocks.pseudocluster.PseudoDataNode;
 import com.starrocks.pseudocluster.Tablet;
 import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.system.SystemInfoService;
