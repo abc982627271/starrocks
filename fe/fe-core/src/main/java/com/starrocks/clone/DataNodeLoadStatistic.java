@@ -60,11 +60,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class BackendLoadStatistic {
-    private static final Logger LOG = LogManager.getLogger(BackendLoadStatistic.class);
+public class DataNodeLoadStatistic {
+    private static final Logger LOG = LogManager.getLogger(DataNodeLoadStatistic.class);
 
     // comparator based on load score and storage medium, smaller load score first
-    public static class BeStatComparator implements Comparator<BackendLoadStatistic> {
+    public static class BeStatComparator implements Comparator<DataNodeLoadStatistic> {
         private TStorageMedium medium;
 
         public BeStatComparator(TStorageMedium medium) {
@@ -72,23 +72,23 @@ public class BackendLoadStatistic {
         }
 
         @Override
-        public int compare(BackendLoadStatistic o1, BackendLoadStatistic o2) {
+        public int compare(DataNodeLoadStatistic o1, DataNodeLoadStatistic o2) {
             double score1 = o1.getLoadScore(medium);
             double score2 = o2.getLoadScore(medium);
             return Double.compare(score1, score2);
         }
     }
 
-    public static class BeStatMixComparator implements Comparator<BackendLoadStatistic> {
+    public static class BeStatMixComparator implements Comparator<DataNodeLoadStatistic> {
         @Override
-        public int compare(BackendLoadStatistic o1, BackendLoadStatistic o2) {
+        public int compare(DataNodeLoadStatistic o1, DataNodeLoadStatistic o2) {
             Double score1 = o1.getMixLoadScore();
             Double score2 = o2.getMixLoadScore();
             return score1.compareTo(score2);
         }
     }
 
-    public static class BeStatComparatorForUsedPercent implements Comparator<BackendLoadStatistic> {
+    public static class BeStatComparatorForUsedPercent implements Comparator<DataNodeLoadStatistic> {
         private TStorageMedium medium;
 
         public BeStatComparatorForUsedPercent(TStorageMedium medium) {
@@ -96,14 +96,14 @@ public class BackendLoadStatistic {
         }
 
         @Override
-        public int compare(BackendLoadStatistic o1, BackendLoadStatistic o2) {
+        public int compare(DataNodeLoadStatistic o1, DataNodeLoadStatistic o2) {
             double percent1 = o1.getUsedPercent(medium);
             double percent2 = o2.getUsedPercent(medium);
             return Double.compare(percent1, percent2);
         }
     }
 
-    public static class BeStatComparatorForPathUsedPercentSkew implements Comparator<BackendLoadStatistic> {
+    public static class BeStatComparatorForPathUsedPercentSkew implements Comparator<DataNodeLoadStatistic> {
         private TStorageMedium medium;
 
         public BeStatComparatorForPathUsedPercentSkew(TStorageMedium medium) {
@@ -111,7 +111,7 @@ public class BackendLoadStatistic {
         }
 
         @Override
-        public int compare(BackendLoadStatistic o1, BackendLoadStatistic o2) {
+        public int compare(DataNodeLoadStatistic o1, DataNodeLoadStatistic o2) {
             Pair<Double, Double> maxMinUsedPercent1 = o1.getMaxMinPathUsedPercent(medium);
             Pair<Double, Double> maxMinUsedPercent2 = o2.getMaxMinPathUsedPercent(medium);
             double skew1 = 0;
@@ -160,8 +160,8 @@ public class BackendLoadStatistic {
     private Map<TStorageMedium, Classification> clazzMap = Maps.newHashMap();
     private List<RootPathLoadStatistic> pathStatistics = Lists.newArrayList();
 
-    public BackendLoadStatistic(long beId, String clusterName, SystemInfoService infoService,
-                                TabletInvertedIndex invertedIndex) {
+    public DataNodeLoadStatistic(long beId, String clusterName, SystemInfoService infoService,
+                                 TabletInvertedIndex invertedIndex) {
         this.beId = beId;
         this.clusterName = clusterName;
         this.infoService = infoService;
