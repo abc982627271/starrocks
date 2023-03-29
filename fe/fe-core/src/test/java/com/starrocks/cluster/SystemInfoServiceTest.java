@@ -236,7 +236,7 @@ public class SystemInfoServiceTest {
         }
 
         Assert.assertNotNull(GlobalStateMgr.getCurrentSystemInfo().getDataNode(backendId));
-        Assert.assertNotNull(GlobalStateMgr.getCurrentSystemInfo().getBackendWithHeartbeatPort("192.168.0.1", 1234));
+        Assert.assertNotNull(GlobalStateMgr.getCurrentSystemInfo().getDataNodeWithHeartbeatPort("192.168.0.1", 1234));
 
         Assert.assertTrue(GlobalStateMgr.getCurrentSystemInfo().getTotalBackendNumber() == 1);
         Assert.assertTrue(GlobalStateMgr.getCurrentSystemInfo().getBackendIds(false).get(0) == backendId);

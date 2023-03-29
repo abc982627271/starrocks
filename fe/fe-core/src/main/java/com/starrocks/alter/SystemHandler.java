@@ -234,7 +234,7 @@ public class SystemHandler extends AlterHandler {
         List<DataNode> decommissionBackends = Lists.newArrayList();
         // check if exist
         for (Pair<String, Integer> pair : hostPortPairs) {
-            DataNode backend = infoService.getBackendWithHeartbeatPort(pair.first, pair.second);
+            DataNode backend = infoService.getDataNodeWithHeartbeatPort(pair.first, pair.second);
             if (backend == null) {
                 throw new DdlException("Backend does not exist[" + pair.first + ":" + pair.second + "]");
             }
@@ -262,7 +262,7 @@ public class SystemHandler extends AlterHandler {
         List<Pair<String, Integer>> hostPortPairs = cancelAlterSystemStmt.getHostPortPairs();
         for (Pair<String, Integer> pair : hostPortPairs) {
             // check if exist
-            DataNode backend = infoService.getBackendWithHeartbeatPort(pair.first, pair.second);
+            DataNode backend = infoService.getDataNodeWithHeartbeatPort(pair.first, pair.second);
             if (backend == null) {
                 throw new DdlException("Backend does not exists[" + pair.first + "]");
             }
