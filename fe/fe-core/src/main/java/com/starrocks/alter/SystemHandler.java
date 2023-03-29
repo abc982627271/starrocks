@@ -148,7 +148,15 @@ public class SystemHandler extends AlterHandler {
         } else if (alterClause instanceof DropBackendClause) {
             // drop backend
             DropBackendClause dropBackendClause = (DropBackendClause) alterClause;
-            GlobalStateMgr.getCurrentSystemInfo().dropBackends(dropBackendClause);
+            List<Pair<String, Integer>> hostPortPairs = dropBackendClause.getHostPortPairs();
+
+            // step1: drop data node
+            if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
+                GlobalStateMgr.getCurrentSystemInfo().dropDataNodes(dropBackendClause);
+            }
+            // step2 : drop compute node
+            GlobalStateMgr.getCurrentSystemInfo().dropComputeNodes(hostPortPairs);
+
         } else if (alterClause instanceof DecommissionBackendClause) {
             // decommission
             DecommissionBackendClause decommissionBackendClause = (DecommissionBackendClause) alterClause;

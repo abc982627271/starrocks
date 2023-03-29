@@ -261,14 +261,14 @@ public class SystemInfoServiceTest {
         DropBackendClause dropStmt = new DropBackendClause(Lists.newArrayList("192.168.0.1:1234"));
         com.starrocks.sql.analyzer.Analyzer.analyze(new AlterSystemStmt(dropStmt), new ConnectContext(null));
         try {
-            GlobalStateMgr.getCurrentSystemInfo().dropBackends(dropStmt);
+            GlobalStateMgr.getCurrentSystemInfo().dropDataNodes(dropStmt);
         } catch (DdlException e) {
             e.printStackTrace();
             Assert.fail();
         }
 
         try {
-            GlobalStateMgr.getCurrentSystemInfo().dropBackends(dropStmt);
+            GlobalStateMgr.getCurrentSystemInfo().dropDataNodes(dropStmt);
         } catch (DdlException e) {
             Assert.assertTrue(e.getMessage().contains("does not exist"));
         }
@@ -313,7 +313,7 @@ public class SystemInfoServiceTest {
         com.starrocks.sql.analyzer.Analyzer.analyze(new AlterSystemStmt(dropStmt2), new ConnectContext(null));
 
         try {
-            GlobalStateMgr.getCurrentSystemInfo().dropBackends(dropStmt2);
+            GlobalStateMgr.getCurrentSystemInfo().dropDataNodes(dropStmt2);
         } catch (DdlException e) {
             e.printStackTrace();
             Assert.assertTrue(e.getMessage()
@@ -321,7 +321,7 @@ public class SystemInfoServiceTest {
         }
 
         try {
-            GlobalStateMgr.getCurrentSystemInfo().dropBackends(dropStmt2);
+            GlobalStateMgr.getCurrentSystemInfo().dropDataNodes(dropStmt2);
         } catch (DdlException e) {
             Assert.assertTrue(e.getMessage().contains("does not exist"));
         }
