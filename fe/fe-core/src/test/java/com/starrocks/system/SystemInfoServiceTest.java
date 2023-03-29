@@ -83,7 +83,7 @@ public class SystemInfoServiceTest {
         DataNode be = new DataNode(100, "127.0.0.1", 1000);
         service.addBackend(be);
         ModifyBackendAddressClause clause = new ModifyBackendAddressClause("127.0.0.1", "sandbox");
-        service.modifyBackendHost(clause);
+        service.modifyDataNodeHost(clause);
         DataNode backend = service.getBackendWithHeartbeatPort("sandbox", 1000);
         Assert.assertNotNull(backend);
     }
@@ -96,7 +96,7 @@ public class SystemInfoServiceTest {
         service.addBackend(be1);
         service.addBackend(be2);
         ModifyBackendAddressClause clause = new ModifyBackendAddressClause("127.0.0.1", "sandbox");
-        service.modifyBackendHost(clause);
+        service.modifyDataNodeHost(clause);
         DataNode backend = service.getBackendWithHeartbeatPort("sandbox", 1000);
         Assert.assertNotNull(backend);
     }
@@ -107,7 +107,7 @@ public class SystemInfoServiceTest {
         service.addBackend(be);
         ModifyBackendAddressClause clause = new ModifyBackendAddressClause("originalHost-test", "sandbox");
         // This case will occur backend [%s] not found exception
-        service.modifyBackendHost(clause);
+        service.modifyDataNodeHost(clause);
     }
 
     @Test
@@ -162,7 +162,7 @@ public class SystemInfoServiceTest {
         
         service.addBackend(be);
         be.setStarletPort(1001);
-        service.dropBackend("newHost", 1000, false);
+        service.dropDataNode("newHost", 1000, false);
         DataNode beIP = service.getBackendWithHeartbeatPort("newHost", 1000);
         Assert.assertTrue(beIP == null);
     }

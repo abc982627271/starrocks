@@ -107,7 +107,7 @@ public class SystemHandler extends AlterHandler {
             List<Long> backendTabletIds = invertedIndex.getTabletIdsByBackendId(beId);
             if (backendTabletIds.isEmpty() && Config.drop_backend_after_decommission) {
                 try {
-                    systemInfoService.dropBackend(beId);
+                    systemInfoService.dropDataNode(beId);
                     LOG.info("no tablet on decommission backend {}, drop it", beId);
                 } catch (DdlException e) {
                     // does not matter, may be backend not exist
@@ -144,7 +144,9 @@ public class SystemHandler extends AlterHandler {
         } else if (alterClause instanceof ModifyBackendAddressClause) {
             // update Backend Address
             ModifyBackendAddressClause modifyBackendAddressClause = (ModifyBackendAddressClause) alterClause;
-            return GlobalStateMgr.getCurrentSystemInfo().modifyBackendHost(modifyBackendAddressClause);
+            return GlobalStateMgr.getCurrentSystemInfo().modifyDataNodeHost(modifyBackendAddressClause);
+            // TODO: modify compute node in SHARED_NOTHING RunMode
+
         } else if (alterClause instanceof DropBackendClause) {
             // drop backend
             DropBackendClause dropBackendClause = (DropBackendClause) alterClause;
@@ -170,6 +172,11 @@ public class SystemHandler extends AlterHandler {
                 backend.setDecommissioned(true);
                 GlobalStateMgr.getCurrentState().getEditLog().logBackendStateChange(backend);
                 LOG.info("set backend {} to decommission", backend.getId());
+            }
+
+            // drop compute node
+            if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
+                GlobalStateMgr.getCurrentSystemInfo().dropComputeNodes(decommissionBackendClause.getHostPortPairs());
             }
 
         } else if (alterClause instanceof AddObserverClause) {
