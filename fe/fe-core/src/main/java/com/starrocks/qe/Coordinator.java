@@ -64,7 +64,7 @@ import com.starrocks.proto.PPlanFragmentCancelReason;
 import com.starrocks.proto.PQueryStatistics;
 import com.starrocks.proto.StatusPB;
 import com.starrocks.qe.QueryStatisticsItem.FragmentInstanceInfo;
-import com.starrocks.rpc.BackendServiceClient;
+import com.starrocks.rpc.DataNodeServiceClient;
 import com.starrocks.rpc.RpcException;
 import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.sql.LoadPlanner;
@@ -1868,7 +1868,7 @@ public class Coordinator {
                 TNetworkAddress brpcAddress = SystemInfoService.toBrpcHost(address);
 
                 try {
-                    BackendServiceClient.getInstance().cancelPlanFragmentAsync(brpcAddress,
+                    DataNodeServiceClient.getInstance().cancelPlanFragmentAsync(brpcAddress,
                             queryId, fragmentInstanceId(), cancelReason, commonRpcParams.is_pipeline);
                 } catch (RpcException e) {
                     LOG.warn("cancel plan fragment get a exception, address={}:{}", brpcAddress.getHostname(),
@@ -1910,7 +1910,7 @@ public class Coordinator {
             }
             this.initiated = true;
             try {
-                return BackendServiceClient.getInstance().execPlanFragmentAsync(brpcAddress, uniqueRpcParams);
+                return DataNodeServiceClient.getInstance().execPlanFragmentAsync(brpcAddress, uniqueRpcParams);
             } catch (RpcException e) {
                 // DO NOT throw exception here, return a complete future with error code,
                 // so that the following logic will cancel the fragment.
@@ -1960,7 +1960,7 @@ public class Coordinator {
             }
             this.initiated = true;
             try {
-                return BackendServiceClient.getInstance().execBatchPlanFragmentsAsync(brpcAddress, tRequest);
+                return DataNodeServiceClient.getInstance().execBatchPlanFragmentsAsync(brpcAddress, tRequest);
             } catch (RpcException e) {
                 // DO NOT throw exception here, return a complete future with error code,
                 // so that the following logic will cancel the fragment.

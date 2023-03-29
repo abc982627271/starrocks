@@ -411,41 +411,6 @@ public class DataNodeLoadStatistic {
         return status;
     }
 
-    public boolean hasAvailDisk() {
-        for (RootPathLoadStatistic rootPathLoadStatistic : pathStatistics) {
-            if (rootPathLoadStatistic.getDiskState() == DiskState.ONLINE) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Classify the paths into 'low', 'mid' and 'high',
-     * and skip offline path, and path with different storage medium
-     */
-    public void getPathStatisticByClass(
-            Set<Long> low, Set<Long> mid, Set<Long> high, TStorageMedium storageMedium) {
-
-        for (RootPathLoadStatistic pathStat : pathStatistics) {
-            if (pathStat.getDiskState() == DiskState.OFFLINE
-                    || (storageMedium != null && pathStat.getStorageMedium() != storageMedium)) {
-                continue;
-            }
-
-            if (pathStat.getClazz() == Classification.LOW) {
-                low.add(pathStat.getPathHash());
-            } else if (pathStat.getClazz() == Classification.HIGH) {
-                high.add(pathStat.getPathHash());
-            } else {
-                mid.add(pathStat.getPathHash());
-            }
-        }
-
-        LOG.debug("after adjust, backend {}, medium: {}, path classification low/mid/high: {}/{}/{}",
-                beId, storageMedium, low.size(), mid.size(), high.size());
-    }
-
     public Set<Long> getPathStatisticForMIDAndClazz(Classification clazz, TStorageMedium storageMedium) {
         Set<Long> paths = Sets.newHashSet();
         for (RootPathLoadStatistic pathStat : pathStatistics) {
