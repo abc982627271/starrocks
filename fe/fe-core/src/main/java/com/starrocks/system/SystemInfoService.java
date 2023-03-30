@@ -662,8 +662,8 @@ public class SystemInfoService {
         return Stream.concat(idToBackendRef.values().stream(), idToComputeNodeRef.values().stream());
     }
 
-    public List<Long> seqChooseBackendIdsByStorageMedium(int backendNum, boolean needAvailable, boolean isCreate,
-                                                         TStorageMedium storageMedium) {
+    public List<Long> seqChooseDataNodeIdsByStorageMedium(int backendNum, boolean needAvailable, boolean isCreate,
+                                                          TStorageMedium storageMedium) {
         final List<DataNode> backends =
                 getBackends().stream().filter(v -> !v.diskExceedLimitByStorageMedium(storageMedium))
                         .collect(Collectors.toList());

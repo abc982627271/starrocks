@@ -2118,9 +2118,9 @@ public class LocalMetastore implements ConnectorMetadata {
                 // randomly choose backends
                 if (Config.enable_strict_storage_medium_check) {
                     chosenBackendIds =
-                            chosenBackendIdBySeq(replicationNum, tabletMeta.getStorageMedium());
+                            chosenDataNodeIdBySeq(replicationNum, tabletMeta.getStorageMedium());
                 } else {
-                    chosenBackendIds = chosenBackendIdBySeq(replicationNum);
+                    chosenBackendIds = chosenDataNodeIdBySeq(replicationNum);
                 }
                 backendsPerBucketSeq.add(chosenBackendIds);
             } else {
@@ -2148,9 +2148,9 @@ public class LocalMetastore implements ConnectorMetadata {
     }
 
     // create replicas for tablet with random chosen backends
-    private List<Long> chosenBackendIdBySeq(int replicationNum, TStorageMedium storageMedium)
+    private List<Long> chosenDataNodeIdBySeq(int replicationNum, TStorageMedium storageMedium)
             throws DdlException {
-        List<Long> chosenBackendIds = systemInfoService.seqChooseBackendIdsByStorageMedium(replicationNum,
+        List<Long> chosenBackendIds = systemInfoService.seqChooseDataNodeIdsByStorageMedium(replicationNum,
                 true, true, storageMedium);
         if (CollectionUtils.isEmpty(chosenBackendIds)) {
             throw new DdlException(
@@ -2164,7 +2164,7 @@ public class LocalMetastore implements ConnectorMetadata {
         return chosenBackendIds;
     }
 
-    private List<Long> chosenBackendIdBySeq(int replicationNum) throws DdlException {
+    private List<Long> chosenDataNodeIdBySeq(int replicationNum) throws DdlException {
         List<Long> chosenBackendIds =
                 systemInfoService.seqChooseBackendIds(replicationNum, true, true);
         if (!CollectionUtils.isEmpty(chosenBackendIds)) {
