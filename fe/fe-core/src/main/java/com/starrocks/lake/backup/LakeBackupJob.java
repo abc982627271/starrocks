@@ -110,7 +110,7 @@ public class LakeBackupJob extends BackupJob {
                                        long visibleVersion, int schemaHash) {
         try {
             DataNode backend = GlobalStateMgr.getCurrentSystemInfo()
-                    .getDataNode(((LakeTablet) tablet).getPrimaryBackendId());
+                    .getDataNode(((LakeTablet) tablet).getPrimaryComputeNodeId());
             LakeTableSnapshotInfo snapshotInfo = new LakeTableSnapshotInfo(dbId,
                     tbl.getId(), partition.getId(), index.getId(), tablet.getId(),
                     backend.getId(), schemaHash, visibleVersion);

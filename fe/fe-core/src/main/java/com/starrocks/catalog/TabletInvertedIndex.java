@@ -479,11 +479,11 @@ public class TabletInvertedIndex {
         writeLock();
         try {
             Preconditions.checkState(tabletMetaMap.containsKey(tabletId));
-            replicaMetaTable.put(tabletId, replica.getBackendId(), replica);
+            replicaMetaTable.put(tabletId, replica.getDataNodeId(), replica);
             replicaToTabletMap.put(replica.getId(), tabletId);
-            backingReplicaMetaTable.put(replica.getBackendId(), tabletId, replica);
+            backingReplicaMetaTable.put(replica.getDataNodeId(), tabletId, replica);
             LOG.debug("add replica {} of tablet {} in backend {}",
-                    replica.getId(), tabletId, replica.getBackendId());
+                    replica.getId(), tabletId, replica.getDataNodeId());
         } finally {
             writeUnlock();
         }

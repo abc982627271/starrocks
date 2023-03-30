@@ -1786,7 +1786,7 @@ public class FrontendServiceImpl implements FrontendService.Iface {
                     // replicas[0] will be the primary replica
                     // getNormalReplicaBackendPathMap returns a linkedHashMap, it's keysets is stable 
                     List<Replica> replicas = Lists.newArrayList(bePathsMap.keySet());
-                    tablets.add(new TTabletLocation(tablet.getId(), replicas.stream().map(Replica::getBackendId)
+                    tablets.add(new TTabletLocation(tablet.getId(), replicas.stream().map(Replica::getDataNodeId)
                             .collect(Collectors.toList())));
                 }
             }

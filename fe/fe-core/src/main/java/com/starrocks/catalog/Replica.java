@@ -258,7 +258,7 @@ public class Replica implements Writable {
         return this.id;
     }
 
-    public long getBackendId() {
+    public long getDataNodeId() {
         return this.backendId;
     }
 

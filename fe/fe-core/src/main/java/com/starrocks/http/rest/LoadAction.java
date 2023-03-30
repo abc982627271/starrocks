@@ -95,7 +95,7 @@ public class LoadAction extends RestBaseAction {
         }
 
         // Choose a backend sequentially.
-        List<Long> backendIds = GlobalStateMgr.getCurrentSystemInfo().seqChooseBackendIds(1, true, false);
+        List<Long> backendIds = GlobalStateMgr.getCurrentSystemInfo().seqChooseDataNodeIds(1, true, false);
         if (CollectionUtils.isEmpty(backendIds)) {
             throw new DdlException("No backend alive.");
         }

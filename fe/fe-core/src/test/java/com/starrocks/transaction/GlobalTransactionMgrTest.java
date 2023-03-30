@@ -570,7 +570,7 @@ public class GlobalTransactionMgrTest {
         assertEquals(GlobalStateMgrTestUtil.testStartVersion + 1, replcia3.getLastFailedVersion());
 
         errorReplicaIds = Sets.newHashSet();
-        Set<Long> unfinishedBackends = Sets.newHashSet(replcia2.getBackendId(), replcia3.getBackendId());
+        Set<Long> unfinishedBackends = Sets.newHashSet(replcia2.getDataNodeId(), replcia3.getDataNodeId());
         assertEquals(masterTransMgr.canTxnFinished(transactionState, errorReplicaIds, unfinishedBackends), false);
         errorReplicaIds = Sets.newHashSet();
         assertEquals(masterTransMgr.canTxnFinished(transactionState, errorReplicaIds, Sets.newHashSet()), true);

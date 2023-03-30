@@ -109,7 +109,7 @@ public class MetadataViewer {
                             List<String> row = Lists.newArrayList();
 
                             ReplicaStatus status = ReplicaStatus.OK;
-                            DataNode be = infoService.getDataNode(replica.getBackendId());
+                            DataNode be = infoService.getDataNode(replica.getDataNodeId());
                             if (be == null || !be.isAvailable() || replica.isBad()) {
                                 status = ReplicaStatus.DEAD;
                             } else if (replica.getVersion() < visibleVersion
@@ -126,7 +126,7 @@ public class MetadataViewer {
 
                             row.add(String.valueOf(tabletId));
                             row.add(String.valueOf(replica.getId()));
-                            row.add(String.valueOf(replica.getBackendId()));
+                            row.add(String.valueOf(replica.getDataNodeId()));
                             row.add(String.valueOf(replica.getVersion()));
                             row.add(String.valueOf(replica.getLastFailedVersion()));
                             row.add(String.valueOf(replica.getLastSuccessVersion()));

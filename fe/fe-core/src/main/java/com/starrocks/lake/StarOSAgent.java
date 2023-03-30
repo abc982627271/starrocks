@@ -400,7 +400,7 @@ public class StarOSAgent {
         }
     }
 
-    public long getPrimaryBackendIdByShard(long shardId) throws UserException {
+    public long getPrimaryComputeNodeIdByShard(long shardId) throws UserException {
         List<ReplicaInfo> replicas = getShardReplicas(shardId);
 
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {

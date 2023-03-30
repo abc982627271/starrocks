@@ -396,15 +396,15 @@ public class OlapScanNode extends ScanNode {
             Collections.shuffle(replicas);
             boolean tabletIsNull = true;
             for (Replica replica : replicas) {
-                DataNode backend = GlobalStateMgr.getCurrentSystemInfo().getDataNode(replica.getBackendId());
+                DataNode backend = GlobalStateMgr.getCurrentSystemInfo().getDataNode(replica.getDataNodeId());
                 if (backend == null) {
-                    LOG.debug("replica {} not exists", replica.getBackendId());
+                    LOG.debug("replica {} not exists", replica.getDataNodeId());
                     continue;
                 }
                 String ip = backend.getHost();
                 int port = backend.getBePort();
                 TScanRangeLocation scanRangeLocation = new TScanRangeLocation(new TNetworkAddress(ip, port));
-                scanRangeLocation.setBackend_id(replica.getBackendId());
+                scanRangeLocation.setBackend_id(replica.getDataNodeId());
                 scanRangeLocations.addToLocations(scanRangeLocation);
                 internalRange.addToHosts(new TNetworkAddress(ip, port));
                 tabletIsNull = false;
@@ -483,15 +483,15 @@ public class OlapScanNode extends ScanNode {
             boolean tabletIsNull = true;
             boolean collectedStat = false;
             for (Replica replica : replicas) {
-                DataNode backend = GlobalStateMgr.getCurrentSystemInfo().getDataNode(replica.getBackendId());
+                DataNode backend = GlobalStateMgr.getCurrentSystemInfo().getDataNode(replica.getDataNodeId());
                 if (backend == null) {
-                    LOG.debug("replica {} not exists", replica.getBackendId());
+                    LOG.debug("replica {} not exists", replica.getDataNodeId());
                     continue;
                 }
                 String ip = backend.getHost();
                 int port = backend.getBePort();
                 TScanRangeLocation scanRangeLocation = new TScanRangeLocation(new TNetworkAddress(ip, port));
-                scanRangeLocation.setBackend_id(replica.getBackendId());
+                scanRangeLocation.setBackend_id(replica.getDataNodeId());
                 scanRangeLocations.addToLocations(scanRangeLocation);
                 internalRange.addToHosts(new TNetworkAddress(ip, port));
                 tabletIsNull = false;

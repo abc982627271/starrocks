@@ -875,7 +875,7 @@ public class TabletScheduler extends LeaderDaemon {
             LOG.info(
                     "succeed to find version incomplete replica from tablet relocating. tablet: {} replicas: {} {}->{}",
                     tabletCtx.getTabletId(), tabletCtx.getTablet().getReplicaInfos(),
-                    tabletCtx.getSrcReplica().getBackendId(), tabletCtx.getDestBackendId());
+                    tabletCtx.getSrcReplica().getDataNodeId(), tabletCtx.getDestBackendId());
         } catch (SchedException e) {
             if (e.getStatus() == Status.SCHEDULE_RETRY) {
                 LOG.debug("failed to find version incomplete replica from tablet relocating. " +
@@ -889,7 +889,7 @@ public class TabletScheduler extends LeaderDaemon {
                 handleReplicaMissing(tabletCtx, batchTask);
                 LOG.info("succeed to find new backend for tablet relocating. tablet: {} replicas: {} {}->{}",
                         tabletCtx.getTabletId(), tabletCtx.getTablet().getReplicaInfos(),
-                        tabletCtx.getSrcReplica().getBackendId(), tabletCtx.getDestBackendId());
+                        tabletCtx.getSrcReplica().getDataNodeId(), tabletCtx.getDestBackendId());
             } else {
                 throw e;
             }
@@ -933,7 +933,7 @@ public class TabletScheduler extends LeaderDaemon {
 
     private boolean deleteBackendDropped(TabletSchedCtx tabletCtx, boolean force) throws SchedException {
         for (Replica replica : tabletCtx.getReplicas()) {
-            long beId = replica.getBackendId();
+            long beId = replica.getDataNodeId();
             if (infoService.getDataNode(beId) == null) {
                 deleteReplicaInternal(tabletCtx, replica, "backend dropped", force);
                 return true;
@@ -954,7 +954,7 @@ public class TabletScheduler extends LeaderDaemon {
 
     private boolean deleteBackendUnavailable(TabletSchedCtx tabletCtx, boolean force) throws SchedException {
         for (Replica replica : tabletCtx.getReplicas()) {
-            DataNode be = infoService.getDataNode(replica.getBackendId());
+            DataNode be = infoService.getDataNode(replica.getDataNodeId());
             if (be == null) {
                 // this case should be handled in deleteBackendDropped()
                 continue;
@@ -1008,7 +1008,7 @@ public class TabletScheduler extends LeaderDaemon {
         // host -> (replicas on same host)
         Map<String, List<Replica>> hostToReplicas = Maps.newHashMap();
         for (Replica replica : tabletCtx.getReplicas()) {
-            DataNode be = infoService.getDataNode(replica.getBackendId());
+            DataNode be = infoService.getDataNode(replica.getDataNodeId());
             if (be == null) {
                 // this case should be handled in deleteBackendDropped()
                 return false;
@@ -1035,7 +1035,7 @@ public class TabletScheduler extends LeaderDaemon {
 
     private boolean deleteReplicaNotInCluster(TabletSchedCtx tabletCtx, boolean force) throws SchedException {
         for (Replica replica : tabletCtx.getReplicas()) {
-            DataNode be = infoService.getDataNode(replica.getBackendId());
+            DataNode be = infoService.getDataNode(replica.getDataNodeId());
             if (be == null) {
                 // this case should be handled in deleteBackendDropped()
                 return false;
@@ -1071,7 +1071,7 @@ public class TabletScheduler extends LeaderDaemon {
         Replica chosenReplica = null;
         double maxScore = 0;
         for (Replica replica : replicas) {
-            DataNodeLoadStatistic beStatistic = statistic.getBackendLoadStatistic(replica.getBackendId());
+            DataNodeLoadStatistic beStatistic = statistic.getBackendLoadStatistic(replica.getDataNodeId());
             if (beStatistic == null) {
                 continue;
             }
@@ -1114,12 +1114,12 @@ public class TabletScheduler extends LeaderDaemon {
         List<Replica> replicas = tabletCtx.getReplicas();
         for (Replica replica : replicas) {
             boolean forceDropBad = false;
-            if (backendSet.contains(replica.getBackendId())) {
+            if (backendSet.contains(replica.getDataNodeId())) {
                 if (replica.isBad() && replicas.size() > 1) {
                     forceDropBad = true;
                     LOG.info("colocate tablet {}, replica {} is bad," +
                                     "will forcefully drop it, current backend set: {}",
-                            tabletCtx.getTabletId(), replica.getBackendId(), backendSet);
+                            tabletCtx.getTabletId(), replica.getDataNodeId(), backendSet);
                 } else {
                     continue;
                 }
@@ -1152,7 +1152,7 @@ public class TabletScheduler extends LeaderDaemon {
             // set priority to normal because it may wait for a long time. Remain it as VERY_HIGH may block other task.
             tabletCtx.setOrigPriority(Priority.NORMAL);
             LOG.info("decommission tablet:" + tabletCtx.getTabletId() + " type:" + tabletCtx.getType() + " replica:" +
-                    replica.getBackendId() + " reason:" + reason + " watermark:" + nextTxnId + " replicas:" +
+                    replica.getDataNodeId() + " reason:" + reason + " watermark:" + nextTxnId + " replicas:" +
                     tabletCtx.getTablet().getReplicaInfos());
             throw new SchedException(Status.SCHEDULE_RETRY, "set watermark txn " + nextTxnId);
         } else if (replica.getState() == ReplicaState.DECOMMISSION && replica.getWatermarkTxnId() != -1) {
@@ -1173,7 +1173,7 @@ public class TabletScheduler extends LeaderDaemon {
         // it will also delete replica from tablet inverted index.
         if (!tabletCtx.deleteReplica(replica)) {
             LOG.warn("delete replica for tablet: {} failed backend {} not found replicas:{}", tabletCtx.getTabletId(),
-                    replica.getBackendId(), replicaInfos);
+                    replica.getDataNodeId(), replicaInfos);
         }
 
         if (force) {
@@ -1182,7 +1182,7 @@ public class TabletScheduler extends LeaderDaemon {
             // NOTICE: only delete the replica from meta may not work. sometimes we can depend on tablet report
             // to delete these replicas, but in FORCE_REDUNDANT case, replica may be added to meta again in report
             // process.
-            sendDeleteReplicaTask(replica.getBackendId(), tabletCtx.getTabletId(), tabletCtx.getSchemaHash());
+            sendDeleteReplicaTask(replica.getDataNodeId(), tabletCtx.getTabletId(), tabletCtx.getSchemaHash());
         }
 
         // write edit log
@@ -1191,12 +1191,12 @@ public class TabletScheduler extends LeaderDaemon {
                 tabletCtx.getPartitionId(),
                 tabletCtx.getIndexId(),
                 tabletCtx.getTabletId(),
-                replica.getBackendId());
+                replica.getDataNodeId());
 
         GlobalStateMgr.getCurrentState().getEditLog().logDeleteReplica(info);
 
         LOG.info("delete replica. tablet id: {}, backend id: {}. reason: {}, force: {} replicas: {}",
-                tabletCtx.getTabletId(), replica.getBackendId(), reason, force, replicaInfos);
+                tabletCtx.getTabletId(), replica.getDataNodeId(), reason, force, replicaInfos);
     }
 
     private void sendDeleteReplicaTask(long backendId, long tabletId, int schemaHash) {

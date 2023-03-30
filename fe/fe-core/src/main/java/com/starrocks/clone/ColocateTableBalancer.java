@@ -278,7 +278,7 @@ public class ColocateTableBalancer extends LeaderDaemon {
     public static boolean needToForceRepair(TabletStatus st, LocalTablet tablet, Set<Long> backendsSet) {
         boolean hasBad = false;
         for (Replica replica : tablet.getImmutableReplicas()) {
-            if (!backendsSet.contains(replica.getBackendId())) {
+            if (!backendsSet.contains(replica.getDataNodeId())) {
                 continue;
             }
             if (replica.isBad()) {

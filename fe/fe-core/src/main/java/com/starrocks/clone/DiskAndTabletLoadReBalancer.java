@@ -915,7 +915,7 @@ public class DiskAndTabletLoadReBalancer extends Rebalancer {
                 }
 
                 for (Replica replica : replicas) {
-                    if (replica.getState() == ReplicaState.NORMAL && replica.getBackendId() == beId) {
+                    if (replica.getState() == ReplicaState.NORMAL && replica.getDataNodeId() == beId) {
                         if (pathHash == -1 || (pathHash != -1 && replica.getPathHash() == pathHash)) {
                             cnt++;
                         }
@@ -1266,12 +1266,12 @@ public class DiskAndTabletLoadReBalancer extends Rebalancer {
                     }
 
                     if (beIds != null) {
-                        tablets.computeIfPresent(replica.getBackendId(), (k, v) -> {
+                        tablets.computeIfPresent(replica.getDataNodeId(), (k, v) -> {
                             v.add(tablet.getId());
                             return v;
                         });
                     } else {
-                        if (replica.getBackendId() != bePaths.first ||
+                        if (replica.getDataNodeId() != bePaths.first ||
                                 !bePaths.second.contains(replica.getPathHash())) {
                             continue;
                         }
@@ -1497,9 +1497,9 @@ public class DiskAndTabletLoadReBalancer extends Rebalancer {
                                         }
 
                                         if (beIds != null) {
-                                            replicaNums.computeIfPresent(replica.getBackendId(), (k, v) -> (v + 1));
+                                            replicaNums.computeIfPresent(replica.getDataNodeId(), (k, v) -> (v + 1));
                                         } else {
-                                            if (replica.getBackendId() != bePaths.first) {
+                                            if (replica.getDataNodeId() != bePaths.first) {
                                                 continue;
                                             }
 

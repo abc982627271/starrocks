@@ -1444,7 +1444,7 @@ public class ReportHandler extends Daemon {
                 // replica is enough. check if this tablet is already in meta
                 // (status changed between 'tabletReport()' and 'addReplica()')
                 for (Replica replica : tablet.getImmutableReplicas()) {
-                    if (replica.getBackendId() == backendId) {
+                    if (replica.getDataNodeId() == backendId) {
                         // tablet is already in meta. return true
                         return;
                     }

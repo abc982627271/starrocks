@@ -172,7 +172,7 @@ public class RestoreJobPrimaryKeyTest {
 
         new Expectations() {
             {
-                systemInfoService.seqChooseBackendIds(anyInt, anyBoolean, anyBoolean);
+                systemInfoService.seqChooseDataNodeIds(anyInt, anyBoolean, anyBoolean);
                 minTimes = 0;
                 result = new Delegate() {
                     public synchronized List<Long> seqChooseBackendIds(int backendNum, boolean needAlive,

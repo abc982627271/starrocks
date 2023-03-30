@@ -95,7 +95,7 @@ public class AdminStmtTest {
             for (MaterializedIndex index : partition.getMaterializedIndices(MaterializedIndex.IndexExtState.VISIBLE)) {
                 for (Tablet tablet : index.getTablets()) {
                     for (Replica replica : ((LocalTablet) tablet).getImmutableReplicas()) {
-                        tabletToBackendList.add(Pair.create(tablet.getId(), replica.getBackendId()));
+                        tabletToBackendList.add(Pair.create(tablet.getId(), replica.getDataNodeId()));
                     }
                 }
             }

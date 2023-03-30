@@ -415,13 +415,13 @@ public class BackupJob extends AbstractJob {
                             + ". visible version: " + visibleVersion);
             return;
         }
-        SnapshotTask task = new SnapshotTask(null, replica.getBackendId(), tablet.getId(),
+        SnapshotTask task = new SnapshotTask(null, replica.getDataNodeId(), tablet.getId(),
                 jobId, dbId, tbl.getId(), partition.getId(),
                 index.getId(), tablet.getId(),
                 visibleVersion,
                 schemaHash, timeoutMs, false /* not restore task */);
         batchTask.addTask(task);
-        unfinishedTaskIds.put(tablet.getId(), replica.getBackendId());
+        unfinishedTaskIds.put(tablet.getId(), replica.getDataNodeId());
     }
 
     private void sendTasks() {

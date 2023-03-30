@@ -1763,7 +1763,7 @@ public class ShowExecutor {
 
                     List<Replica> replicas = tablet.getImmutableReplicas();
                     for (Replica replica : replicas) {
-                        Replica tmp = invertedIndex.getReplica(tabletId, replica.getBackendId());
+                        Replica tmp = invertedIndex.getReplica(tabletId, replica.getDataNodeId());
                         if (tmp == null) {
                             isSync = false;
                             break;

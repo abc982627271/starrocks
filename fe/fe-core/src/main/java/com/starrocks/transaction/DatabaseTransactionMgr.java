@@ -824,14 +824,14 @@ public class DatabaseTransactionMgr {
                                     if (replica.checkVersionCatchUp(partition.getVisibleVersion(), true)
                                             && replica.getLastFailedVersion() < 0
                                             && (unfinishedBackends == null
-                                            || !unfinishedBackends.contains(replica.getBackendId()))) {
+                                            || !unfinishedBackends.contains(replica.getDataNodeId()))) {
                                         ++successHealthyReplicaNum;
                                         // replica report version has greater cur transaction commit version
                                         // This can happen when the BE publish succeeds but fails to send a response to FE
                                     } else if (replica.getVersion() >= partitionCommitInfo.getVersion()) {
                                         ++successHealthyReplicaNum;
                                     } else if (unfinishedBackends != null
-                                            && unfinishedBackends.contains(replica.getBackendId())) {
+                                            && unfinishedBackends.contains(replica.getDataNodeId())) {
                                         errReplicas.add(replica.getId());
                                     }
                                 } else if (replica.getVersion() >= partitionCommitInfo.getVersion()) {

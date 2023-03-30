@@ -962,7 +962,7 @@ public class PlanFragmentWithCostTest extends PlanTestBase {
                 result = Replica.ReplicaState.NORMAL;
                 replica.getSchemaHash();
                 result = -1;
-                replica.getBackendId();
+                replica.getDataNodeId();
                 result = 10001;
                 replica.checkVersionCatchUp(anyLong, anyBoolean);
                 result = true;

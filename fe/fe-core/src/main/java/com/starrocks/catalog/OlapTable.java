@@ -689,7 +689,7 @@ public class OlapTable extends Table {
 
             // replicas
             List<Long> beIds = GlobalStateMgr.getCurrentSystemInfo()
-                    .seqChooseBackendIds(replicationNum, true, true);
+                    .seqChooseDataNodeIds(replicationNum, true, true);
             if (CollectionUtils.isEmpty(beIds)) {
                 return new Status(ErrCode.COMMON_ERROR, "failed to find "
                         + replicationNum
@@ -808,7 +808,7 @@ public class OlapTable extends Table {
                 for (Tablet tablet : materializedIndex.getTablets()) {
                     List<Replica> replicas = ((LocalTablet) tablet).getImmutableReplicas();
                     for (Replica replica : replicas) {
-                        long backendId = replica.getBackendId();
+                        long backendId = replica.getDataNodeId();
                         fullBackendId.add(backendId);
                     }
                 }
@@ -2313,7 +2313,7 @@ public class OlapTable extends Table {
                         long tabletId = tablet.getId();
                         List<Replica> replicas = ((LocalTablet) tablet).getImmutableReplicas();
                         for (Replica replica : replicas) {
-                            long backendId = replica.getBackendId();
+                            long backendId = replica.getDataNodeId();
                             DropReplicaTask dropTask = new DropReplicaTask(backendId, tabletId, schemaHash, true);
                             AgentBatchTask batchTask = batchTaskMap.get(backendId);
                             if (batchTask == null) {

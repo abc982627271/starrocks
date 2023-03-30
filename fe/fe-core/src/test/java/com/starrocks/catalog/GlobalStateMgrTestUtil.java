@@ -142,7 +142,7 @@ public class GlobalStateMgrTestUtil {
                     List<Replica> allReplicas = ((LocalTablet) masterTablet).getImmutableReplicas();
                     for (Replica masterReplica : allReplicas) {
                         Replica slaveReplica = ((LocalTablet) slaveTablet).getReplicaById(masterReplica.getId());
-                        if (slaveReplica.getBackendId() != masterReplica.getBackendId()
+                        if (slaveReplica.getDataNodeId() != masterReplica.getDataNodeId()
                                 || slaveReplica.getVersion() != masterReplica.getVersion()
                                 || slaveReplica.getLastFailedVersion() != masterReplica.getLastFailedVersion()
                                 || slaveReplica.getLastSuccessVersion() != slaveReplica.getLastSuccessVersion()) {

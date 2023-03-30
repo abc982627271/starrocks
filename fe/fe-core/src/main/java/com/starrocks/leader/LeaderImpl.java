@@ -1023,7 +1023,7 @@ public class LeaderImpl {
                         for (Replica replica : localTablet.getImmutableReplicas()) {
                             TReplicaMeta replicaMeta = new TReplicaMeta();
                             replicaMeta.setReplica_id(replica.getId());
-                            replicaMeta.setBackend_id(replica.getBackendId());
+                            replicaMeta.setBackend_id(replica.getDataNodeId());
                             replicaMeta.setSchema_hash(replica.getSchemaHash());
                             replicaMeta.setVersion(replica.getVersion());
                             replicaMeta.setData_size(replica.getDataSize());

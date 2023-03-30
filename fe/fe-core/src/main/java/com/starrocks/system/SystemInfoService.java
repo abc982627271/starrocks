@@ -670,7 +670,7 @@ public class SystemInfoService {
         return seqChooseBackendIds(backendNum, needAvailable, isCreate, backends);
     }
 
-    public List<Long> seqChooseBackendIds(int backendNum, boolean needAvailable, boolean isCreate) {
+    public List<Long> seqChooseDataNodeIds(int backendNum, boolean needAvailable, boolean isCreate) {
         final List<DataNode> backends =
                 getBackends().stream().filter(v -> !v.diskExceedLimit()).collect(Collectors.toList());
         return seqChooseBackendIds(backendNum, needAvailable, isCreate, backends);

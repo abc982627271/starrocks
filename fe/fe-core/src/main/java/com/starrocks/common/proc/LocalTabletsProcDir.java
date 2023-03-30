@@ -132,7 +132,7 @@ public class LocalTabletsProcDir implements ProcDirInterface {
                 } else {
                     for (Replica replica : localTablet.getImmutableReplicas()) {
                         if ((version > -1 && replica.getVersion() != version)
-                                || (backendId > -1 && replica.getBackendId() != backendId)
+                                || (backendId > -1 && replica.getDataNodeId() != backendId)
                                 || (state != null && replica.getState() != state)) {
                             continue;
                         }
@@ -140,7 +140,7 @@ public class LocalTabletsProcDir implements ProcDirInterface {
                         // tabletId -- replicaId -- backendId -- version -- versionHash -- dataSize -- rowCount -- state
                         tabletInfo.add(tabletId);
                         tabletInfo.add(replica.getId());
-                        tabletInfo.add(replica.getBackendId());
+                        tabletInfo.add(replica.getDataNodeId());
                         tabletInfo.add(Replica.DEPRECATED_PROP_SCHEMA_HASH);
                         tabletInfo.add(replica.getVersion());
                         tabletInfo.add(0);
@@ -158,7 +158,7 @@ public class LocalTabletsProcDir implements ProcDirInterface {
                         tabletInfo.add(0);
                         tabletInfo.add(replica.getVersionCount());
                         tabletInfo.add(Replica.DEPRECATED_PROP_PATH_HASH);
-                        DataNode backend = backendMap.get(replica.getBackendId());
+                        DataNode backend = backendMap.get(replica.getDataNodeId());
                         String metaUrl;
                         String compactionUrl;
                         if (backend != null) {

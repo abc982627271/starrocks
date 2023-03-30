@@ -498,7 +498,7 @@ public class SparkLoadJob extends BulkLoadJob {
                                     for (Replica replica : ((LocalTablet) tablet).getImmutableReplicas()) {
                                         long replicaId = replica.getId();
                                         tabletAllReplicas.add(replicaId);
-                                        long backendId = replica.getBackendId();
+                                        long backendId = replica.getDataNodeId();
                                         DataNode backend = GlobalStateMgr.getCurrentState().getCurrentSystemInfo()
                                                 .getDataNode(backendId);
 
@@ -521,7 +521,7 @@ public class SparkLoadJob extends BulkLoadJob {
 
                                 } else {
                                     // lake tablet
-                                    long backendId = ((LakeTablet) tablet).getPrimaryBackendId();
+                                    long backendId = ((LakeTablet) tablet).getPrimaryComputeNodeId();
                                     DataNode backend = GlobalStateMgr.getCurrentSystemInfo().
                                             getDataNode(backendId);
                                     if (backend == null) {

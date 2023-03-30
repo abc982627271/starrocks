@@ -1787,7 +1787,7 @@ public class LocalMetastore implements ConnectorMetadata {
             if (table.isCloudNativeTable()) {
                 long primaryBackendId = -1;
                 try {
-                    primaryBackendId = ((LakeTablet) tablet).getPrimaryBackendId();
+                    primaryBackendId = ((LakeTablet) tablet).getPrimaryComputeNodeId();
                 } catch (UserException e) {
                     throw new DdlException(e.getMessage());
                 }
@@ -1818,7 +1818,7 @@ public class LocalMetastore implements ConnectorMetadata {
             } else {
                 for (Replica replica : ((LocalTablet) tablet).getImmutableReplicas()) {
                     CreateReplicaTask task = new CreateReplicaTask(
-                            replica.getBackendId(),
+                            replica.getDataNodeId(),
                             dbId,
                             table.getId(),
                             partition.getId(),
@@ -2166,7 +2166,7 @@ public class LocalMetastore implements ConnectorMetadata {
 
     private List<Long> chosenDataNodeIdBySeq(int replicationNum) throws DdlException {
         List<Long> chosenBackendIds =
-                systemInfoService.seqChooseBackendIds(replicationNum, true, true);
+                systemInfoService.seqChooseDataNodeIds(replicationNum, true, true);
         if (!CollectionUtils.isEmpty(chosenBackendIds)) {
             return chosenBackendIds;
         } else if (replicationNum > 1) {

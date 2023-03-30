@@ -753,7 +753,7 @@ public class RestoreJob extends AbstractJob {
                 LocalTablet tablet = (LocalTablet) index.getTablet(idChain.getTabletId());
                 Replica replica = tablet.getReplicaById(idChain.getReplicaId());
                 long signature = globalStateMgr.getNextId();
-                SnapshotTask task = new SnapshotTask(null, replica.getBackendId(), signature,
+                SnapshotTask task = new SnapshotTask(null, replica.getDataNodeId(), signature,
                         jobId, db.getId(),
                         tbl.getId(), part.getId(), index.getId(), tablet.getId(),
                         part.getVisibleVersion(),
@@ -761,7 +761,7 @@ public class RestoreJob extends AbstractJob {
                         true /* is restore task*/);
                 batchTask.addTask(task);
                 unfinishedSignatureToId.put(signature, tablet.getId());
-                bePathsMap.put(replica.getBackendId(), replica.getPathHash());
+                bePathsMap.put(replica.getDataNodeId(), replica.getPathHash());
             }
         } finally {
             db.readUnlock();
@@ -814,7 +814,7 @@ public class RestoreJob extends AbstractJob {
                 GlobalStateMgr.getCurrentInvertedIndex().addTablet(restoreTablet.getId(), tabletMeta);
                 for (Replica restoreReplica : ((LocalTablet) restoreTablet).getImmutableReplicas()) {
                     GlobalStateMgr.getCurrentInvertedIndex().addReplica(restoreTablet.getId(), restoreReplica);
-                    CreateReplicaTask task = new CreateReplicaTask(restoreReplica.getBackendId(), dbId,
+                    CreateReplicaTask task = new CreateReplicaTask(restoreReplica.getDataNodeId(), dbId,
                             localTbl.getId(), restorePart.getId(), restoredIdx.getId(),
                             restoreTablet.getId(), indexMeta.getShortKeyColumnCount(),
                             indexMeta.getSchemaHash(), restoreReplica.getVersion(),

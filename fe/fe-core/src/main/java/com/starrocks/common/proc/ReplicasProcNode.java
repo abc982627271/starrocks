@@ -75,7 +75,7 @@ public class ReplicasProcNode implements ProcNodeInterface {
         for (Replica replica : replicas) {
             String metaUrl;
             String compactionUrl;
-            DataNode backend = backendMap.get(replica.getBackendId());
+            DataNode backend = backendMap.get(replica.getDataNodeId());
             if (backend != null) {
                 metaUrl = String.format("http://%s:%d/api/meta/header/%d",
                         backend.getHost(),
@@ -93,7 +93,7 @@ public class ReplicasProcNode implements ProcNodeInterface {
             }
 
             result.addRow(Arrays.asList(String.valueOf(replica.getId()),
-                    String.valueOf(replica.getBackendId()),
+                    String.valueOf(replica.getDataNodeId()),
                     String.valueOf(replica.getVersion()),
                     String.valueOf(0),
                     String.valueOf(replica.getLastSuccessVersion()),
