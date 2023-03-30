@@ -402,7 +402,7 @@ public class CoordinatorPreprocessor {
         this.idToBackend = GlobalStateMgr.getCurrentSystemInfo().getIdToBackend();
         this.idToComputeNode = buildComputeNodeInfo();
 
-        //if it has compute node and contains hdfsScanNode,will use compute node,even though preferComputeNode is false
+        //if it has compute node and contains hdfsScanNode, will use compute node, even though preferComputeNode is false
         boolean preferComputeNode = connectContext.getSessionVariable().isPreferComputeNode();
         if (idToComputeNode != null && idToComputeNode.size() > 0) {
             hasComputeNode = true;
