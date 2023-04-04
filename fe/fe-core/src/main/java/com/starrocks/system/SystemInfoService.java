@@ -674,15 +674,18 @@ public class SystemInfoService {
 
     public List<Long> seqChooseBackendIdsByStorageMedium(int backendNum, boolean needAvailable, boolean isCreate,
                                                          TStorageMedium storageMedium) {
-        final List<Backend> backends =
+        final List<ComputeNode> backends =
                 getBackends().stream().filter(v -> !v.diskExceedLimitByStorageMedium(storageMedium))
                         .collect(Collectors.toList());
         return seqChooseBackendIds(backendNum, needAvailable, isCreate, backends);
     }
 
     public List<Long> seqChooseBackendIds(int backendNum, boolean needAvailable, boolean isCreate) {
-        final List<Backend> backends =
+        final List<ComputeNode> backends =
                 getBackends().stream().filter(v -> !v.diskExceedLimit()).collect(Collectors.toList());
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_DATA) {
+            backends.addAll(getComputeNodes().asList());
+        }
         return seqChooseBackendIds(backendNum, needAvailable, isCreate, backends);
     }
 
@@ -690,7 +693,7 @@ public class SystemInfoService {
     // return null if not enough backend
     // use synchronized to run serially
     public synchronized List<Long> seqChooseBackendIds(int backendNum, boolean needAvailable, boolean isCreate,
-                                                       final List<Backend> srcBackends) {
+                                                       final List<ComputeNode> srcBackends) {
         long lastBackendId;
 
         if (isCreate) {
@@ -700,8 +703,8 @@ public class SystemInfoService {
         }
 
         // host -> BE list
-        Map<String, List<Backend>> backendMaps = Maps.newHashMap();
-        for (Backend backend : srcBackends) {
+        Map<String, List<ComputeNode>> backendMaps = Maps.newHashMap();
+        for (ComputeNode backend : srcBackends) {
             // If needAvailable is true, unavailable backend won't go into the pick list
             if (needAvailable && !backend.isAvailable()) {
                 continue;
@@ -710,15 +713,15 @@ public class SystemInfoService {
             if (backendMaps.containsKey(backend.getHost())) {
                 backendMaps.get(backend.getHost()).add(backend);
             } else {
-                List<Backend> list = Lists.newArrayList();
+                List<ComputeNode> list = Lists.newArrayList();
                 list.add(backend);
                 backendMaps.put(backend.getHost(), list);
             }
         }
 
         // if more than one backend exists in same host, select a backend at random
-        List<Backend> backends = Lists.newArrayList();
-        for (List<Backend> list : backendMaps.values()) {
+        List<ComputeNode> backends = Lists.newArrayList();
+        for (List<ComputeNode> list : backendMaps.values()) {
             Collections.shuffle(list);
             backends.add(list.get(0));
         }
@@ -727,20 +730,20 @@ public class SystemInfoService {
         // get last backend index
         int lastBackendIndex = -1;
         int index = -1;
-        for (Backend backend : backends) {
+        for (ComputeNode backend : backends) {
             index++;
             if (backend.getId() == lastBackendId) {
                 lastBackendIndex = index;
                 break;
             }
         }
-        Iterator<Backend> iterator = Iterators.cycle(backends);
+        Iterator<ComputeNode> iterator = Iterators.cycle(backends);
         index = -1;
         boolean failed = false;
         // 2 cycle at most
         int maxIndex = 2 * backends.size();
         while (iterator.hasNext() && backendIds.size() < backendNum) {
-            Backend backend = iterator.next();
+            ComputeNode backend = iterator.next();
             index++;
             if (index <= lastBackendIndex) {
                 continue;
@@ -775,7 +778,7 @@ public class SystemInfoService {
         }
 
         // debug
-        for (Backend backend : backends) {
+        for (ComputeNode backend : backends) {
             LOG.debug("random select: {}", backend);
         }
 
