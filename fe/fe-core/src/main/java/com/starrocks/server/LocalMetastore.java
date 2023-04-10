@@ -213,6 +213,7 @@ import com.starrocks.thrift.TStorageType;
 import com.starrocks.thrift.TTabletMetaType;
 import com.starrocks.thrift.TTabletType;
 import com.starrocks.thrift.TTaskType;
+import com.starrocks.warehouse.Warehouse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.hadoop.util.ThreadUtil;
 import org.apache.logging.log4j.LogManager;
@@ -1769,8 +1770,8 @@ public class LocalMetastore implements ConnectorMetadata {
         }
     }
 
-    private List<CreateReplicaTask> buildCreateReplicaTasks(long dbId, OlapTable table, List<Partition> partitions)
-            throws DdlException {
+    private List<CreateReplicaTask> buildCreateReplicaTasks(long dbId, OlapTable table,
+                                                            List<Partition> partitions) throws DdlException {
         List<CreateReplicaTask> tasks = new ArrayList<>();
         for (Partition partition : partitions) {
             tasks.addAll(buildCreateReplicaTasks(dbId, table, partition));
@@ -1778,8 +1779,8 @@ public class LocalMetastore implements ConnectorMetadata {
         return tasks;
     }
 
-    private List<CreateReplicaTask> buildCreateReplicaTasks(long dbId, OlapTable table, Partition partition)
-            throws DdlException {
+    private List<CreateReplicaTask> buildCreateReplicaTasks(long dbId, OlapTable table,
+                                                            Partition partition) throws DdlException {
         ArrayList<CreateReplicaTask> tasks = new ArrayList<>((int) partition.getReplicaCount());
         for (MaterializedIndex index : partition.getMaterializedIndices(MaterializedIndex.IndexExtState.VISIBLE)) {
             tasks.addAll(buildCreateReplicaTasks(dbId, table, partition, index));
