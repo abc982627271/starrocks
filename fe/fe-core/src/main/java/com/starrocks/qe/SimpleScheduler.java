@@ -75,7 +75,7 @@ public class SimpleScheduler {
     @Nullable
     public static TNetworkAddress getHost(long backendId,
                                           List<TScanRangeLocation> locations,
-                                          ImmutableMap<Long, Backend> backends,
+                                          ImmutableMap<Long, ComputeNode> backends,
                                           Reference<Long> backendIdRef) {
         if (locations == null || backends == null) {
             return null;

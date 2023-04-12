@@ -508,8 +508,10 @@ public class StarOSAgent {
                     String workerAddr = workerInfo.getIpPort();
                     String[] pair = workerAddr.split(":");
                     long backendId = Config.only_use_compute_node ?
-                            GlobalStateMgr.getCurrentSystemInfo().getComputeNodeIdWithStarletPort(pair[0], Integer.parseInt(pair[1])) :
-                            GlobalStateMgr.getCurrentSystemInfo().getBackendIdWithStarletPort(pair[0], Integer.parseInt(pair[1])) ;
+                            GlobalStateMgr.getCurrentSystemInfo().
+                                    getComputeNodeIdWithStarletPort(pair[0], Integer.parseInt(pair[1])) :
+                            GlobalStateMgr.getCurrentSystemInfo().
+                                    getBackendIdWithStarletPort(pair[0], Integer.parseInt(pair[1]));
 
                     if (backendId == -1L) {
                         LOG.info("can't find backendId with starletPort for {}.", workerAddr);
