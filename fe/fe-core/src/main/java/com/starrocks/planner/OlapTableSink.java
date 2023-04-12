@@ -88,6 +88,7 @@ import com.starrocks.thrift.TTabletLocation;
 import com.starrocks.thrift.TUniqueId;
 import com.starrocks.thrift.TWriteQuorumType;
 import com.starrocks.transaction.TransactionState;
+import com.starrocks.warehouse.Warehouse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -121,14 +122,18 @@ public class OlapTableSink extends DataSink {
     private boolean missAutoIncrementColumn;
     private int autoIncrementSlotId;
 
+    private final String currentWarehouse;
+
     public OlapTableSink(OlapTable dstTable, TupleDescriptor tupleDescriptor, List<Long> partitionIds,
-                         TWriteQuorumType writeQuorum, boolean enableReplicatedStorage, boolean nullExprInAutoIncrement) {
-        this(dstTable, tupleDescriptor, partitionIds, true, writeQuorum, enableReplicatedStorage, nullExprInAutoIncrement);
+                         TWriteQuorumType writeQuorum, boolean enableReplicatedStorage,
+                         boolean nullExprInAutoIncrement, String currentWarehouse) {
+        this(dstTable, tupleDescriptor, partitionIds, true, writeQuorum,
+                enableReplicatedStorage, nullExprInAutoIncrement, currentWarehouse);
     }
 
     public OlapTableSink(OlapTable dstTable, TupleDescriptor tupleDescriptor, List<Long> partitionIds,
                          boolean enablePipelineLoad, TWriteQuorumType writeQuorum, boolean enableReplicatedStorage,
-                         boolean nullExprInAutoIncrement) {
+                         boolean nullExprInAutoIncrement, String currentWarehouse) {
         this.dstTable = dstTable;
         this.tupleDescriptor = tupleDescriptor;
         Preconditions.checkState(!CollectionUtils.isEmpty(partitionIds));
@@ -150,6 +155,7 @@ public class OlapTableSink extends DataSink {
                 }
             }
         }
+        this.currentWarehouse = currentWarehouse;
     }
 
     public void init(TUniqueId loadId, long txnId, long dbId, long loadChannelTimeoutS)
@@ -455,8 +461,11 @@ public class OlapTableSink extends DataSink {
             for (MaterializedIndex index : partition.getMaterializedIndices(IndexExtState.ALL)) {
                 for (Tablet tablet : index.getTablets()) {
                     if (table.isCloudNativeTableOrMaterializedView()) {
-                        locationParam.addToTablets(new TTabletLocation(
-                                tablet.getId(), Lists.newArrayList(((LakeTablet) tablet).getPrimaryComputeNodeId())));
+                        Warehouse warehouse = GlobalStateMgr.getCurrentState().getWarehouseMgr().
+                                getWarehouse(currentWarehouse);
+                        com.starrocks.warehouse.Cluster cluster = warehouse.getAnyAvailableCluster();
+                        locationParam.addToTablets(new TTabletLocation(tablet.getId(),
+                                Lists.newArrayList(((LakeTablet) tablet).getPrimaryComputeNodeId(cluster.getWorkerGroupId()))));
                     } else {
                         // we should ensure the replica backend is alive
                         // otherwise, there will be a 'unknown node id, id=xxx' error for stream load

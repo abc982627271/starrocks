@@ -53,6 +53,7 @@ import com.starrocks.catalog.ScalarType;
 import com.starrocks.catalog.Tablet;
 import com.starrocks.cluster.Cluster;
 import com.starrocks.common.AnalysisException;
+import com.starrocks.common.Config;
 import com.starrocks.common.DdlException;
 import com.starrocks.common.FeConstants;
 import com.starrocks.common.FeMetaVersion;
@@ -64,6 +65,7 @@ import com.starrocks.common.util.NetUtils;
 import com.starrocks.metric.MetricRepo;
 import com.starrocks.persist.DropComputeNodeLog;
 import com.starrocks.persist.gson.GsonUtils;
+import com.starrocks.qe.ConnectContext;
 import com.starrocks.qe.ShowResultSet;
 import com.starrocks.qe.ShowResultSetMetaData;
 import com.starrocks.server.GlobalStateMgr;
@@ -75,6 +77,7 @@ import com.starrocks.system.Backend.BackendState;
 import com.starrocks.thrift.TNetworkAddress;
 import com.starrocks.thrift.TStatusCode;
 import com.starrocks.thrift.TStorageMedium;
+import com.starrocks.warehouse.Warehouse;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -88,6 +91,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -119,9 +123,10 @@ public class SystemInfoService {
         pathHashToDishInfoRef = ImmutableMap.<Long, DiskInfo>of();
     }
 
-    public List<Long> addComputeNodes(List<Pair<String, Integer>> hostPortPairs)
+    public void addComputeNodes(List<Pair<String, Integer>> hostPortPairs)
             throws DdlException {
-        List<Long> computeNodeIds = new ArrayList<>();
+
+        Map<Long, ComputeNode> computeNodes = new HashMap<>();
         for (Pair<String, Integer> pair : hostPortPairs) {
             // check is already exist
             if (getBackendWithHeartbeatPort(pair.first, pair.second) != null) {
@@ -133,9 +138,18 @@ public class SystemInfoService {
         }
 
         for (Pair<String, Integer> pair : hostPortPairs) {
-            computeNodeIds.addAll(addComputeNode(pair.first, pair.second));
+            computeNodes.putAll(addComputeNode(pair.first, pair.second));
         }
-        return computeNodeIds;
+
+        // add it to warehouse
+        if (Config.only_use_compute_node) {
+            String currentWh = ConnectContext.get().getCurrentWarehouse();
+            Warehouse currentWarehouse = GlobalStateMgr.getCurrentState().getWarehouseMgr().getWarehouse(currentWh);
+            // for debug
+            LOG.info("currentWarehouse is {}", currentWarehouse.getFullName());
+            com.starrocks.warehouse.Cluster cluster = currentWarehouse.getAnyAvailableCluster();
+            cluster.addNodes(computeNodes);
+        }
     }
 
     private ComputeNode getComputeNodeWithHeartbeatPort(String host, Integer heartPort) {
@@ -158,13 +172,13 @@ public class SystemInfoService {
     }
 
     // Final entry of adding compute node
-    private List<Long> addComputeNode(String host, int heartbeatPort) throws DdlException {
-        List<Long> computeNodeIds = new ArrayList<>();
+    private Map<Long, ComputeNode> addComputeNode(String host, int heartbeatPort) throws DdlException {
+        Map<Long, ComputeNode> computeNodes = new HashMap<>();
         ComputeNode newComputeNode = new ComputeNode(GlobalStateMgr.getCurrentState().getNextId(), host, heartbeatPort);
         // update idToComputor
         Map<Long, ComputeNode> copiedComputeNodes = Maps.newHashMap(idToComputeNodeRef);
         copiedComputeNodes.put(newComputeNode.getId(), newComputeNode);
-        computeNodeIds.add(newComputeNode.getId());
+        computeNodes.put(newComputeNode.getId(), newComputeNode);
         idToComputeNodeRef = ImmutableMap.copyOf(copiedComputeNodes);
 
         setComputeNodeOwner(newComputeNode);
@@ -173,7 +187,7 @@ public class SystemInfoService {
         GlobalStateMgr.getCurrentState().getEditLog().logAddComputeNode(newComputeNode);
         LOG.info("finished to add {} ", newComputeNode);
 
-        return computeNodeIds;
+        return computeNodes;
     }
 
     private void setComputeNodeOwner(ComputeNode computeNode) {

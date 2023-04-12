@@ -35,6 +35,7 @@ import com.starrocks.planner.MysqlTableSink;
 import com.starrocks.planner.OlapTableSink;
 import com.starrocks.planner.PlanFragment;
 import com.starrocks.qe.ConnectContext;
+import com.starrocks.server.WarehouseManager;
 import com.starrocks.sql.analyzer.AnalyzeState;
 import com.starrocks.sql.analyzer.ExpressionAnalyzer;
 import com.starrocks.sql.analyzer.Field;
@@ -187,10 +188,11 @@ public class InsertPlanner {
             DataSink dataSink;
             if (insertStmt.getTargetTable() instanceof OlapTable) {
                 OlapTable olapTable = (OlapTable) insertStmt.getTargetTable();
-
+                String currentWarehouse = session.getCurrentWarehouse() == null ?
+                        WarehouseManager.DEFAULT_WAREHOUSE_NAME : session.getCurrentWarehouse();
                 dataSink = new OlapTableSink((OlapTable) insertStmt.getTargetTable(), olapTuple,
                         insertStmt.getTargetPartitionIds(), canUsePipeline, olapTable.writeQuorum(),
-                        olapTable.enableReplicatedStorage(), nullExprInAutoIncrement);
+                        olapTable.enableReplicatedStorage(), nullExprInAutoIncrement, currentWarehouse);
             } else if (insertStmt.getTargetTable() instanceof MysqlTable) {
                 dataSink = new MysqlTableSink((MysqlTable) insertStmt.getTargetTable());
             } else {
