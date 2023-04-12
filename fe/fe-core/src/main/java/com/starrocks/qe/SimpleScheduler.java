@@ -81,7 +81,7 @@ public class SimpleScheduler {
             return null;
         }
         LOG.debug("getHost backendID={}, backendSize={}", backendId, backends.size());
-        Backend backend = backends.get(backendId);
+        ComputeNode backend = backends.get(backendId);
         lock.lock();
         try {
             if (backend != null && backend.isAlive() && !blacklistBackends.containsKey(backendId)) {
@@ -93,7 +93,7 @@ public class SimpleScheduler {
                         continue;
                     }
                     // choose the first alive backend(in analysis stage, the locations are random)
-                    Backend candidateBackend = backends.get(location.backend_id);
+                    ComputeNode candidateBackend = backends.get(location.backend_id);
                     if (candidateBackend != null && candidateBackend.isAlive()
                             && !blacklistBackends.containsKey(location.backend_id)) {
                         backendIdRef.setRef(location.backend_id);

@@ -49,7 +49,7 @@ import com.starrocks.common.Config;
 import com.starrocks.common.DdlException;
 import com.starrocks.common.UserException;
 import com.starrocks.server.GlobalStateMgr;
-import com.starrocks.system.Backend;
+import com.starrocks.system.ComputeNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -431,7 +431,7 @@ public class StarOSAgent {
                         long backendId = -1L;
                         if (Config.only_use_compute_node) {
                             backendId = GlobalStateMgr.getCurrentSystemInfo().
-                                    getComputeNodeWithStarletPort(pair[0], Integer.parseInt(pair[1]));
+                                    getComputeNodeIdWithStarletPort(pair[0], Integer.parseInt(pair[1]));
                         } else {
                             backendId = GlobalStateMgr.getCurrentSystemInfo()
                                     .getBackendIdWithStarletPort(pair[0], Integer.parseInt(pair[1]));
@@ -471,7 +471,7 @@ public class StarOSAgent {
                         long backendId = -1L;
                         if (Config.only_use_compute_node) {
                             backendId = GlobalStateMgr.getCurrentSystemInfo().
-                                    getComputeNodeWithStarletPort(pair[0], Integer.parseInt(pair[1]));
+                                    getComputeNodeIdWithStarletPort(pair[0], Integer.parseInt(pair[1]));
                         } else {
                             backendId = GlobalStateMgr.getCurrentSystemInfo()
                                     .getBackendIdWithStarletPort(pair[0], Integer.parseInt(pair[1]));
@@ -494,8 +494,8 @@ public class StarOSAgent {
         throw new UserException("Failed to get primary backend. shard id: " + shardId);
     }
 
-    public Set<Long> getBackendIdsByShard(long shardId) throws UserException {
-        List<ReplicaInfo> replicas = getShardReplicas(shardId);
+    public Set<Long> getBackendIdsByShard(long shardId, long workerGroupId) throws UserException {
+        List<ReplicaInfo> replicas = getShardReplicas(shardId, workerGroupId);
 
         Set<Long> backendIds = Sets.newHashSet();
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
@@ -507,8 +507,9 @@ public class StarOSAgent {
                     // get backendId from system info
                     String workerAddr = workerInfo.getIpPort();
                     String[] pair = workerAddr.split(":");
-                    long backendId = GlobalStateMgr.getCurrentSystemInfo()
-                            .getBackendIdWithStarletPort(pair[0], Integer.parseInt(pair[1]));
+                    long backendId = Config.only_use_compute_node ?
+                            GlobalStateMgr.getCurrentSystemInfo().getComputeNodeIdWithStarletPort(pair[0], Integer.parseInt(pair[1])) :
+                            GlobalStateMgr.getCurrentSystemInfo().getBackendIdWithStarletPort(pair[0], Integer.parseInt(pair[1])) ;
 
                     if (backendId == -1L) {
                         LOG.info("can't find backendId with starletPort for {}.", workerAddr);
@@ -516,12 +517,12 @@ public class StarOSAgent {
                         //  saveImage(). Refer to: https://starrocks.atlassian.net/browse/SR-16340
                         if (workerInfo.getWorkerPropertiesMap().containsKey("be_port")) {
                             int bePort = Integer.parseInt(workerInfo.getWorkerPropertiesMap().get("be_port"));
-                            Backend be = GlobalStateMgr.getCurrentSystemInfo()
-                                    .getBackendWithBePort(pair[0], bePort);
-                            if (be == null) {
+                            ComputeNode cn = GlobalStateMgr.getCurrentSystemInfo()
+                                    .getComputeNodeWithBePort(pair[0], bePort);
+                            if (cn == null) {
                                 LOG.warn("can't find backendId with bePort:{} for {}.", bePort, workerAddr);
                             } else {
-                                backendId = be.getId();
+                                backendId = cn.getId();
                             }
                         }
                         // Can't find the backendId, give up

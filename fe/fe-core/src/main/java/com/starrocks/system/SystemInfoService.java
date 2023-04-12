@@ -528,7 +528,7 @@ public class SystemInfoService {
         return -1L;
     }
 
-    public long getComputeNodeWithStarletPort(String host, int starletPort) {
+    public long getComputeNodeIdWithStarletPort(String host, int starletPort) {
         ImmutableMap<Long, ComputeNode> idToComputeNode = idToComputeNodeRef;
         for (ComputeNode cn : idToComputeNode.values()) {
             if (cn.getHost().equals(host) && cn.getStarletPort() == starletPort) {
@@ -826,6 +826,11 @@ public class SystemInfoService {
     }
 
     public ImmutableMap<Long, ComputeNode> getIdComputeNode() {
+        if (Config.only_use_compute_node) {
+            String currentWarehouse = ConnectContext.get().getCurrentWarehouse();
+            Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(currentWarehouse);
+            return ImmutableMap.copyOf(warehouse.getAnyAvailableCluster().getComputeNodeMap());
+        }
         return idToComputeNodeRef;
     }
 

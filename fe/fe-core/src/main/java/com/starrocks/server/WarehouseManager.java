@@ -74,6 +74,7 @@ public class WarehouseManager implements Writable {
             .add("TotalRunning")
             .build();
      */
+
     public static final ImmutableList<String> WAREHOUSE_PROC_NODE_TITLE_NAMES = new ImmutableList.Builder<String>()
             .add("Warehouse")
             .add("State")
@@ -341,4 +342,5 @@ public class WarehouseManager implements Writable {
             return result;
         }
     }
+
 }

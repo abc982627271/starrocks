@@ -22,7 +22,10 @@ import com.starrocks.catalog.Tablet;
 import com.starrocks.common.UserException;
 import com.starrocks.common.io.Text;
 import com.starrocks.persist.gson.GsonUtils;
+import com.starrocks.qe.ConnectContext;
 import com.starrocks.server.GlobalStateMgr;
+import com.starrocks.warehouse.Cluster;
+import com.starrocks.warehouse.Warehouse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -88,11 +91,14 @@ public class LakeTablet extends Tablet {
                 getPrimaryComputeNodeIdByShard(getShardId(), clusterId);
     }
 
-
     @Override
     public Set<Long> getBackendIds() {
         try {
-            return GlobalStateMgr.getCurrentState().getStarOSAgent().getBackendIdsByShard(getShardId());
+            String currentWarehouse = ConnectContext.get().getCurrentWarehouse();
+            Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(currentWarehouse);
+            Cluster cluster = warehouse.getAnyAvailableCluster();
+            return GlobalStateMgr.getCurrentState().getStarOSAgent().
+                    getBackendIdsByShard(getShardId(), cluster.getWorkerGroupId());
         } catch (UserException e) {
             LOG.warn("Failed to get backends by shard. tablet id: {}", getId(), e);
             return Sets.newHashSet();

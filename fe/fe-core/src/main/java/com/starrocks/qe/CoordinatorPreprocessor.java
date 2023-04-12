@@ -55,6 +55,7 @@ import com.starrocks.planner.ScanNode;
 import com.starrocks.planner.SchemaScanNode;
 import com.starrocks.planner.UnionNode;
 import com.starrocks.server.GlobalStateMgr;
+import com.starrocks.server.RunMode;
 import com.starrocks.service.FrontendOptions;
 import com.starrocks.sql.common.ErrorType;
 import com.starrocks.sql.common.StarRocksPlannerException;
@@ -85,6 +86,7 @@ import com.starrocks.thrift.TScanRangeLocations;
 import com.starrocks.thrift.TScanRangeParams;
 import com.starrocks.thrift.TUniqueId;
 import com.starrocks.thrift.TWorkGroup;
+import com.starrocks.warehouse.Warehouse;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -427,7 +429,8 @@ public class CoordinatorPreprocessor {
         ImmutableMap<Long, ComputeNode> idToComputeNode
                 = ImmutableMap.copyOf(GlobalStateMgr.getCurrentSystemInfo().getIdComputeNode());
         int useComputeNodeNumber = connectContext.getSessionVariable().getUseComputeNodes();
-        if (useComputeNodeNumber < 0 || useComputeNodeNumber >= idToComputeNode.size()) {
+        if (useComputeNodeNumber < 0 || useComputeNodeNumber >= idToComputeNode.size()
+                || Config.only_use_compute_node) {
             return idToComputeNode;
         } else {
             Map<Long, ComputeNode> computeNodes = new HashMap<>();
@@ -1857,9 +1860,12 @@ public class CoordinatorPreprocessor {
                 assignedBytesPerHost.put(minLocation.server, assignedBytesPerHost.get(minLocation.server) + 1);
 
                 Reference<Long> backendIdRef = new Reference<>();
-                TNetworkAddress execHostPort = SimpleScheduler.getHost(minLocation.backend_id,
+                TNetworkAddress execHostPort = Config.only_use_compute_node ? SimpleScheduler.getHost(minLocation.backend_id,
                         scanRangeLocations.getLocations(),
-                        idToBackend, backendIdRef);
+                        idToBackend, backendIdRef) : SimpleScheduler.getHost(minLocation.backend_id,
+                        scanRangeLocations.getLocations(),
+                        idToComputeNode, backendIdRef);
+
                 if (execHostPort == null) {
                     throw new UserException(FeConstants.BACKEND_NODE_NOT_FOUND_ERROR
                             + backendInfosString(false));

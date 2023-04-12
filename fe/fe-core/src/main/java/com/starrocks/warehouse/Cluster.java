@@ -79,6 +79,10 @@ public class Cluster implements Writable {
         }
     }
 
+    public Map<Long, ComputeNode> getComputeNodeMap() {
+        return computeNodeMap;
+    }
+
     public void clearComputeNodes() {
         computeNodeMap.clear();
     }

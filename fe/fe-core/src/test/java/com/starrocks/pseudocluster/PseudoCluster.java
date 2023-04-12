@@ -184,11 +184,6 @@ public class PseudoCluster {
         }
 
         @Override
-        public void addWorker(long backendId, String hostAndPort) {
-            workers.add(new Worker(backendId, nextId++, hostAndPort));
-        }
-
-        @Override
         public void removeWorker(String hostAndPort) throws DdlException {
             workers.removeIf(w -> Objects.equals(w.hostAndPort, hostAndPort));
         }
@@ -246,7 +241,7 @@ public class PseudoCluster {
         }
 
         @Override
-        public Set<Long> getBackendIdsByShard(long shardId) throws UserException {
+        public Set<Long> getBackendIdsByShard(long shardId, long workerGroupId) throws UserException {
             Set<Long> results = new HashSet<>();
             shardInfos.stream().filter(x -> x.getShardId() == shardId).forEach(y -> {
                 for (ReplicaInfo info : y.getReplicaInfoList()) {
