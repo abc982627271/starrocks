@@ -413,7 +413,7 @@ public class LoadPlanner {
             // 4. Olap table sink
             dataSink = new OlapTableSink((OlapTable) destTable, tupleDesc, partitionIds, canUsePipeLine,
                     ((OlapTable) destTable).writeQuorum(), ((OlapTable) destTable).enableReplicatedStorage(),
-                    checkNullExprInAutoIncrement());
+                    checkNullExprInAutoIncrement(), null);
             if (this.missAutoIncrementColumn == Boolean.TRUE) {
                 ((OlapTableSink) dataSink).setMissAutoIncrementColumn();
             }

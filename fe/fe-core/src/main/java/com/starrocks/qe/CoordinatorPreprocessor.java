@@ -513,7 +513,7 @@ public class CoordinatorPreprocessor {
             if (fragment.getDataPartition() == DataPartition.UNPARTITIONED) {
                 Reference<Long> backendIdRef = new Reference<>();
                 TNetworkAddress execHostport;
-                if (usedComputeNode) {
+                if (usedComputeNode || Config.only_use_compute_node) {
                     execHostport = SimpleScheduler.getComputeNodeHost(this.idToComputeNode, backendIdRef);
                 } else {
                     execHostport = SimpleScheduler.getBackendHost(this.idToBackend, backendIdRef);
