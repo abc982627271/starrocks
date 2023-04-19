@@ -51,6 +51,11 @@ public class LocalWarehouse extends Warehouse {
     }
 
     @Override
+    public void initDefaultCluster() {
+        cluster.init();
+    }
+
+    @Override
     public void getProcNodeData(BaseProcResult result) {
         result.addRow(Lists.newArrayList(this.getName(),
                 this.getState().toString(),
