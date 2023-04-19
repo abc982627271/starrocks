@@ -95,6 +95,12 @@ public class LakeTablet extends Tablet {
                 getPrimaryComputeNodeIdByShard(getShardId(), clusterId);
     }
 
+    // the final func
+    public long getPrimaryComputeNodeId(long clusterId) throws UserException {
+        return GlobalStateMgr.getCurrentState().getStarOSAgent().
+                getPrimaryComputeNodeIdByShard(getShardId(), clusterId);
+    }
+
     @Override
     public Set<Long> getBackendIds() {
         if (GlobalStateMgr.isCheckpointThread()) {

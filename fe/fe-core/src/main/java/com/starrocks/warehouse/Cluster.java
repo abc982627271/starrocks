@@ -45,6 +45,17 @@ public class Cluster implements Writable {
         workerGroupId = StarOSAgent.DEFAULT_WORKER_GROUP_ID;
     }
 
+    public void init() {
+        if (RunMode.allowCreateLakeTable()) {
+            try {
+                workerGroupId = GlobalStateMgr.getCurrentStarOSAgent().createWorkerGroup("x0");
+            } catch (DdlException e) {
+                LOG.warn(e);
+                System.exit(-1);
+            }
+        }
+    }
+
     public long getId() {
         return id;
     }
