@@ -285,16 +285,19 @@ public class GsonUtils {
 
     private static final RuntimeTypeAdapterFactory<PEntryObject> P_ENTRY_OBJECT_RUNTIME_TYPE_ADAPTER_FACTORY =
             RuntimeTypeAdapterFactory.of(PEntryObject.class, "clazz")
-                    .registerSubtype(DbPEntryObject.class, "DbPEntryObject")
-                    .registerSubtype(TablePEntryObject.class, "TablePEntryObject")
-                    .registerSubtype(UserPEntryObject.class, "UserPEntryObject")
-                    .registerSubtype(ResourcePEntryObject.class, "ResourcePEntryObject")
-                    .registerSubtype(ViewPEntryObject.class, "ViewPEntryObject")
-                    .registerSubtype(MaterializedViewPEntryObject.class, "MaterializedViewPEntryObject")
-                    .registerSubtype(GlobalFunctionPEntryObject.class, "GlobalFunctionPEntryObject")
-                    .registerSubtype(FunctionPEntryObject.class, "FunctionPEntryObject")
-                    .registerSubtype(CatalogPEntryObject.class, "CatalogPEntryObject")
-                    .registerSubtype(ResourceGroupPEntryObject.class, "ResourceGroupPEntryObject");
+                    .registerSubtype(DbPEntryObject.class, DbPEntryObject.class.getSimpleName())
+                    .registerSubtype(TablePEntryObject.class, TablePEntryObject.class.getSimpleName())
+                    .registerSubtype(UserPEntryObject.class, UserPEntryObject.class.getSimpleName())
+                    .registerSubtype(ResourcePEntryObject.class, ResourcePEntryObject.class.getSimpleName())
+                    .registerSubtype(ViewPEntryObject.class, ViewPEntryObject.class.getSimpleName())
+                    .registerSubtype(MaterializedViewPEntryObject.class,
+                            MaterializedViewPEntryObject.class.getSimpleName())
+                    .registerSubtype(GlobalFunctionPEntryObject.class,
+                            GlobalFunctionPEntryObject.class.getSimpleName())
+                    .registerSubtype(FunctionPEntryObject.class, FunctionPEntryObject.class.getSimpleName())
+                    .registerSubtype(CatalogPEntryObject.class, CatalogPEntryObject.class.getSimpleName())
+                    .registerSubtype(ResourceGroupPEntryObject.class,
+                            ResourceGroupPEntryObject.class.getSimpleName());
 
     private static final RuntimeTypeAdapterFactory<SecurityIntegration> SEC_INTEGRATION_RUNTIME_TYPE_ADAPTER_FACTORY =
             RuntimeTypeAdapterFactory.of(SecurityIntegration.class, "clazz")
@@ -384,7 +387,6 @@ public class GsonUtils {
             .registerTypeAdapterFactory(TABLE_TYPE_ADAPTER_FACTORY)
             .registerTypeAdapterFactory(SNAPSHOT_INFO_TYPE_ADAPTER_FACTORY)
             .registerTypeAdapterFactory(P_ENTRY_OBJECT_RUNTIME_TYPE_ADAPTER_FACTORY)
-            .registerTypeAdapterFactory(SEC_INTEGRATION_RUNTIME_TYPE_ADAPTER_FACTORY)
             .registerTypeAdapterFactory(WAREHOUSE_TYPE_ADAPTER_FACTORY)
             .registerTypeAdapterFactory(LOAD_JOB_TYPE_RUNTIME_ADAPTER_FACTORY)
             .registerTypeAdapterFactory(TXN_COMMIT_ATTACHMENT_TYPE_RUNTIME_ADAPTER_FACTORY)
