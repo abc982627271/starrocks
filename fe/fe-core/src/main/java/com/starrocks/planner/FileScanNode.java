@@ -409,7 +409,7 @@ public class FileScanNode extends LoadScanNode {
 
     private TScanRangeLocations newLocations(TBrokerScanRangeParams params, String brokerName, boolean hasBroker)
             throws UserException {
-        Backend selectedBackend = backends.get(nextBe++);
+        ComputeNode selectedBackend = backends.get(nextBe++);
         nextBe = nextBe % backends.size();
 
         // Generate on broker scan range
@@ -696,7 +696,7 @@ public class FileScanNode extends LoadScanNode {
             return;
         }
 
-        Set<Long> aliveBes = backends.stream().map(Backend::getId).collect(Collectors.toSet());
+        Set<Long> aliveBes = backends.stream().map(ComputeNode::getId).collect(Collectors.toSet());
         nextBe = 0;
         for (TScanRangeLocations locations : locationsList) {
             TScanRangeLocation scanRangeLocation = locations.getLocations().get(0);
