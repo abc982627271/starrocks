@@ -43,7 +43,6 @@ import com.starrocks.analysis.ArithmeticExpr;
 import com.starrocks.analysis.BrokerDesc;
 import com.starrocks.analysis.Expr;
 import com.starrocks.analysis.FunctionCallExpr;
-import com.starrocks.sql.ast.ImportColumnDesc;
 import com.starrocks.analysis.IntLiteral;
 import com.starrocks.analysis.NullLiteral;
 import com.starrocks.analysis.SlotDescriptor;
@@ -68,7 +67,10 @@ import com.starrocks.fs.HdfsUtil;
 import com.starrocks.load.BrokerFileGroup;
 import com.starrocks.load.Load;
 import com.starrocks.server.GlobalStateMgr;
+import com.starrocks.server.RunMode;
+import com.starrocks.sql.ast.ImportColumnDesc;
 import com.starrocks.system.Backend;
+import com.starrocks.system.ComputeNode;
 import com.starrocks.thrift.TBrokerFileStatus;
 import com.starrocks.thrift.TBrokerRangeDesc;
 import com.starrocks.thrift.TBrokerScanRange;
@@ -144,7 +146,7 @@ public class FileScanNode extends LoadScanNode {
     private int filesAdded;
 
     // Only used for external table in select statement
-    private List<Backend> backends;
+    private List<ComputeNode> backends;
     private int nextBe = 0;
 
     private Analyzer analyzer;
@@ -498,11 +500,21 @@ public class FileScanNode extends LoadScanNode {
 
     private void assignBackends() throws UserException {
         backends = Lists.newArrayList();
-        for (Backend be : GlobalStateMgr.getCurrentSystemInfo().getIdToBackend().values()) {
+        for (ComputeNode be : GlobalStateMgr.getCurrentSystemInfo().getIdToBackend().values()) {
             if (be.isAvailable()) {
                 backends.add(be);
             }
         }
+
+        // TODO: need to refactor after be split into cn + dn
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_DATA) {
+            for (ComputeNode cn : GlobalStateMgr.getCurrentSystemInfo().getIdComputeNode().values()) {
+                if (cn.isAvailable()) {
+                    backends.add(cn);
+                }
+            }
+        }
+
         if (backends.isEmpty()) {
             throw new UserException("No available backends");
         }
