@@ -107,6 +107,7 @@ import com.starrocks.system.ComputeNode;
 import com.starrocks.system.Frontend;
 import com.starrocks.thrift.TNetworkAddress;
 import com.starrocks.transaction.TransactionState;
+import com.starrocks.warehouse.Warehouse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -1764,5 +1765,9 @@ public class EditLog {
 
     private void logJsonObject(short op, Object obj) {
         logEdit(op, out -> Text.writeString(out, GsonUtils.GSON.toJson(obj)));
+    }
+
+    public void logCreateWarehouse(Warehouse warehouse) {
+        logEdit(OperationType.OP_CREATE_WH, warehouse);
     }
 }
