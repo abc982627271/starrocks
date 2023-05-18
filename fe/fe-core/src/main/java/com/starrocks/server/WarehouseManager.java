@@ -14,6 +14,7 @@
 
 package com.starrocks.server;
 
+import autovalue.shaded.com.google.common.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.annotations.SerializedName;
 import com.staros.util.LockCloseable;
@@ -24,6 +25,7 @@ import com.starrocks.common.proc.BaseProcResult;
 import com.starrocks.common.proc.ProcNodeInterface;
 import com.starrocks.common.proc.ProcResult;
 import com.starrocks.persist.gson.GsonUtils;
+import com.starrocks.sql.ast.CreateWarehouseStmt;
 import com.starrocks.warehouse.LocalWarehouse;
 import com.starrocks.warehouse.Warehouse;
 import org.apache.logging.log4j.LogManager;
@@ -80,6 +82,23 @@ public class WarehouseManager implements Writable {
     public Warehouse getWarehouse(String warehouseName) {
         try (LockCloseable lock = new LockCloseable(rwLock.readLock())) {
             return fullNameToWh.get(warehouseName);
+        }
+    }
+
+    public void createWarehouse(CreateWarehouseStmt stmt) throws DdlException {
+        String warehouseName = stmt.getFullWhName();
+
+        try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
+            Preconditions.checkState(!fullNameToWh.containsKey(warehouseName),
+                    "Warehouse '%s' already exists", warehouseName);
+
+            long id = GlobalStateMgr.getCurrentState().getNextId();
+            Warehouse wh = new LocalWarehouse(id, warehouseName;
+            fullNameToWh.put(wh.getFullName(), wh);
+            idToWh.put(wh.getId(), wh);
+            wh.setExist(true);
+            GlobalStateMgr.getCurrentState().getEditLog().logCreateWarehouse(wh);
+            LOG.info("createWarehouse whName = " + warehouseName + ", id = " + id);
         }
     }
 
