@@ -93,12 +93,22 @@ public class WarehouseManager implements Writable {
                     "Warehouse '%s' already exists", warehouseName);
 
             long id = GlobalStateMgr.getCurrentState().getNextId();
-            Warehouse wh = new LocalWarehouse(id, warehouseName;
+            Warehouse wh = new LocalWarehouse(id, warehouseName);
             fullNameToWh.put(wh.getFullName(), wh);
             idToWh.put(wh.getId(), wh);
             wh.setExist(true);
             GlobalStateMgr.getCurrentState().getEditLog().logCreateWarehouse(wh);
             LOG.info("createWarehouse whName = " + warehouseName + ", id = " + id);
+        }
+    }
+
+    public void replayCreateWarehouse(Warehouse warehouse) {
+        String whName = warehouse.getFullName();
+        try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
+            Preconditions.checkState(!fullNameToWh.containsKey(whName), "Warehouse '%s' already exists", whName);
+            fullNameToWh.put(whName, warehouse);
+            idToWh.put(warehouse.getId(), warehouse);
+            warehouse.setExist(true);
         }
     }
 
@@ -122,7 +132,9 @@ public class WarehouseManager implements Writable {
             WarehouseManager data = GsonUtils.GSON.fromJson(s, WarehouseManager.class);
             if (data != null) {
                 if (data.fullNameToWh != null) {
-                    // do nothing
+                    for (Warehouse warehouse : data.fullNameToWh.values()) {
+                        replayCreateWarehouse(warehouse);
+                    }
                 }
                 warehouseCount = data.fullNameToWh.size();
             }
