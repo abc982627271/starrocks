@@ -94,6 +94,7 @@ import com.starrocks.scheduler.persist.TaskRunStatus;
 import com.starrocks.scheduler.persist.TaskRunStatusChange;
 import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.server.LocalMetastore;
+import com.starrocks.server.WarehouseManager;
 import com.starrocks.sql.ast.UserIdentity;
 import com.starrocks.staros.StarMgrJournal;
 import com.starrocks.staros.StarMgrServer;
@@ -158,6 +159,12 @@ public class EditLog {
                     TransactionIdInfo idInfo = (TransactionIdInfo) journal.getData();
                     GlobalStateMgr.getCurrentGlobalTransactionMgr().getTransactionIDGenerator()
                             .initTransactionId(idInfo.getTxnId() + 1);
+                    break;
+                }
+                case OperationType.OP_CREATE_WH: {
+                    Warehouse wh = (Warehouse) journal.getData();
+                    WarehouseManager warehouseMgr = globalStateMgr.getWarehouseMgr();
+                    warehouseMgr.replayCreateWarehouse(wh);
                     break;
                 }
                 case OperationType.OP_SAVE_AUTO_INCREMENT_ID:
