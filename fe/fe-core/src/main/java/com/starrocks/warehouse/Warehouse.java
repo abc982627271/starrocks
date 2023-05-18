@@ -81,6 +81,8 @@ public abstract class Warehouse implements Writable {
 
     public abstract List<List<String>> getClusterInfo();
 
+    public abstract void dropSelf();
+
     @Override
     public void write(DataOutput out) throws IOException {
         String json = GsonUtils.GSON.toJson(this);

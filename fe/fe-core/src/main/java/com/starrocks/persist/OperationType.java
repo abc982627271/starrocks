@@ -315,6 +315,7 @@ public class OperationType {
 
     // warehouse
     public static final short OP_CREATE_WH = 11110;
+    public static final short OP_DROP_WH = 11111;
 
 
     // constraint properties

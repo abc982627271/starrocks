@@ -1834,4 +1834,8 @@ public class EditLog {
     public void logCreateWarehouse(Warehouse warehouse) {
         logEdit(OperationType.OP_CREATE_WH, warehouse);
     }
+
+    public void logDropWarehouse(OpWarehouseLog log) {
+        logEdit(OperationType.OP_DROP_WH, log);
+    }
 }

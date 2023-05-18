@@ -99,6 +99,7 @@ import com.starrocks.persist.ModifyPartitionInfo;
 import com.starrocks.persist.ModifyTableColumnOperationLog;
 import com.starrocks.persist.ModifyTablePropertyOperationLog;
 import com.starrocks.persist.MultiEraseTableInfo;
+import com.starrocks.persist.OpWarehouseLog;
 import com.starrocks.persist.OperationType;
 import com.starrocks.persist.PartitionPersistInfo;
 import com.starrocks.persist.PartitionPersistInfoV2;
@@ -820,6 +821,11 @@ public class JournalEntity implements Writable {
             // warehouse related journal
             case OperationType.OP_CREATE_WH: {
                 data = Warehouse.read(in);
+                isRead = true;
+                break;
+            }
+            case OperationType.OP_DROP_WH: {
+                data = OpWarehouseLog.read(in);
                 isRead = true;
                 break;
             }
