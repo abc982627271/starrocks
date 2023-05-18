@@ -74,4 +74,9 @@ public class LocalWarehouse extends Warehouse {
         cluster.getProcNodeData(result);
         return result.getRows();
     }
+
+    @Override
+    public void dropSelf() {
+        // do nothing
+    }
 }

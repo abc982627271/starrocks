@@ -24,8 +24,10 @@ import com.starrocks.common.io.Writable;
 import com.starrocks.common.proc.BaseProcResult;
 import com.starrocks.common.proc.ProcNodeInterface;
 import com.starrocks.common.proc.ProcResult;
+import com.starrocks.persist.OpWarehouseLog;
 import com.starrocks.persist.gson.GsonUtils;
 import com.starrocks.sql.ast.CreateWarehouseStmt;
+import com.starrocks.sql.ast.DropWarehouseStmt;
 import com.starrocks.warehouse.LocalWarehouse;
 import com.starrocks.warehouse.Warehouse;
 import org.apache.logging.log4j.LogManager;
@@ -109,6 +111,31 @@ public class WarehouseManager implements Writable {
             fullNameToWh.put(whName, warehouse);
             idToWh.put(warehouse.getId(), warehouse);
             warehouse.setExist(true);
+        }
+    }
+
+    public void dropWarehouse(DropWarehouseStmt stmt) throws DdlException {
+        String warehouseName = stmt.getFullWhName();
+        try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
+            Preconditions.checkState(fullNameToWh.containsKey(warehouseName),
+                    "Warehouse '%s' doesn't exist", warehouseName);
+            Warehouse warehouse = fullNameToWh.get(warehouseName);
+            fullNameToWh.remove(warehouseName);
+            idToWh.remove(warehouse.getId());
+            warehouse.dropSelf();
+
+            OpWarehouseLog log = new OpWarehouseLog(warehouseName);
+            GlobalStateMgr.getCurrentState().getEditLog().logDropWarehouse(log);
+        }
+    }
+
+    public void replayDropWarehouse(String warehouseName) throws DdlException {
+        try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
+            Preconditions.checkState(fullNameToWh.containsKey(warehouseName),
+                    "Warehouse '%s' doesn't exist", warehouseName);
+            Warehouse warehouse = fullNameToWh.get(warehouseName);
+            fullNameToWh.remove(warehouseName);
+            idToWh.remove(warehouse.getId());
         }
     }
 
