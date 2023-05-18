@@ -54,7 +54,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -528,46 +527,6 @@ public class StarOSAgent {
     public Set<Long> getBackendIdsByShard(long shardId, long workerGroupId) throws UserException {
         List<ReplicaInfo> replicas = getShardReplicas(shardId, workerGroupId);
 
-<<<<<<< HEAD
-=======
-        try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
-            for (ReplicaInfo replicaInfo : replicas) {
-                if (replicaInfo.getReplicaRole() == ReplicaRole.PRIMARY) {
-                    WorkerInfo workerInfo = replicaInfo.getWorkerInfo();
-                    long workerId = workerInfo.getWorkerId();
-                    String workerAddr = workerInfo.getIpPort();
-                    String[] pair = workerAddr.split(":");
-                    // get compute nodeId from cluster
-
-                    if (!workerToBackend.containsKey(workerId)) {
-                        // get backendId from system info by host & starletPort
-                        long backendId = -1L;
-                        if (Config.only_use_compute_node) {
-                            backendId = GlobalStateMgr.getCurrentSystemInfo().
-                                    getComputeNodeIdWithStarletPort(pair[0], Integer.parseInt(pair[1]));
-                        } else {
-                            backendId = GlobalStateMgr.getCurrentSystemInfo()
-                                    .getBackendIdWithStarletPort(pair[0], Integer.parseInt(pair[1]));
-                        }
-                        if (backendId == -1L) {
-                            throw new UserException("Failed to get backend by worker. worker id: " + workerId);
-                        }
-                        // put it into map
-                        workerToId.put(workerAddr, workerId);
-                        workerToBackend.put(workerId, backendId);
-                        return backendId;
-                    }
-                    return workerToBackend.get(workerId);
-                }
-            }
-        }
-        throw new UserException("Failed to get primary backend. shard id: " + shardId);
-    }
-
-    public Set<Long> getBackendIdsByShard(long shardId, long workerGroupId) throws UserException {
-        List<ReplicaInfo> replicas = getShardReplicas(shardId, workerGroupId);
-
->>>>>>> 286f0bc969 (update some codes)
         Set<Long> backendIds = Sets.newHashSet();
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
             for (ReplicaInfo replicaInfo : replicas) {
