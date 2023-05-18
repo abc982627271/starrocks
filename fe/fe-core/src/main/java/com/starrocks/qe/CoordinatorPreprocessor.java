@@ -1966,7 +1966,7 @@ public class CoordinatorPreprocessor {
                 }
 
                 Reference<Long> backendIdRef = new Reference<>();
-                TNetworkAddress execHostPort = SimpleScheduler.getNewHost(minLocation.backend_id,
+                TNetworkAddress execHostPort = SimpleScheduler.getHost(minLocation.backend_id,
                         scanRangeLocations.getLocations(),
                         idToBackend, idToComputeNode, backendIdRef);
 
