@@ -1802,6 +1802,7 @@ public class EditLog {
     public void logDropWarehouse(OpWarehouseLog log) {
         logEdit(OperationType.OP_DROP_WH, log);
     }
+<<<<<<< HEAD
 
     public void logSuspendWarehouse(OpWarehouseLog log) {
         logEdit(OperationType.OP_SUSPEND_WH, log);
@@ -1810,4 +1811,6 @@ public class EditLog {
     public void logResumeWarehouse(OpWarehouseLog log) {
         logEdit(OperationType.OP_RESUME_WH, log);
     }
+=======
+>>>>>>> 8d373731eb (drop warehouse)
 }
