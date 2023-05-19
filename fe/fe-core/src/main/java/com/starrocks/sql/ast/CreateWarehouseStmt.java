@@ -38,7 +38,7 @@ public class CreateWarehouseStmt extends DdlStmt {
         this.properties = properties;
     }
 
-    public String getFullWhName() {
+    public String getWarehouseName() {
         return warehouseName;
     }
 

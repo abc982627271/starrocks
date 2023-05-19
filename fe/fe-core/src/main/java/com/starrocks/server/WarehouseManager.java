@@ -28,6 +28,7 @@ import com.starrocks.persist.OpWarehouseLog;
 import com.starrocks.persist.gson.GsonUtils;
 import com.starrocks.sql.ast.CreateWarehouseStmt;
 import com.starrocks.sql.ast.DropWarehouseStmt;
+import com.starrocks.sql.ast.ResumeWarehouseStmt;
 import com.starrocks.sql.ast.SuspendWarehouseStmt;
 import com.starrocks.warehouse.LocalWarehouse;
 import com.starrocks.warehouse.Warehouse;
@@ -72,7 +73,7 @@ public class WarehouseManager implements Writable {
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
             Warehouse wh = new LocalWarehouse(DEFAULT_WAREHOUSE_ID,
                     DEFAULT_WAREHOUSE_NAME);
-            fullNameToWh.put(wh.getFullName(), wh);
+            fullNameToWh.put(wh.getName(), wh);
             idToWh.put(wh.getId(), wh);
             wh.setExist(true);
         }
@@ -89,7 +90,11 @@ public class WarehouseManager implements Writable {
     }
 
     public void createWarehouse(CreateWarehouseStmt stmt) throws DdlException {
-        String warehouseName = stmt.getFullWhName();
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
+            throw new RuntimeException(new DdlException("unsupported statement in shared_nothing mode"));
+        }
+
+        String warehouseName = stmt.getWarehouseName();
 
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
             Preconditions.checkState(!fullNameToWh.containsKey(warehouseName),
@@ -97,7 +102,7 @@ public class WarehouseManager implements Writable {
 
             long id = GlobalStateMgr.getCurrentState().getNextId();
             Warehouse wh = new LocalWarehouse(id, warehouseName);
-            fullNameToWh.put(wh.getFullName(), wh);
+            fullNameToWh.put(wh.getName(), wh);
             idToWh.put(wh.getId(), wh);
             wh.setExist(true);
             GlobalStateMgr.getCurrentState().getEditLog().logCreateWarehouse(wh);
@@ -106,7 +111,7 @@ public class WarehouseManager implements Writable {
     }
 
     public void replayCreateWarehouse(Warehouse warehouse) {
-        String whName = warehouse.getFullName();
+        String whName = warehouse.getName();
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
             Preconditions.checkState(!fullNameToWh.containsKey(whName), "Warehouse '%s' already exists", whName);
             fullNameToWh.put(whName, warehouse);
@@ -116,7 +121,11 @@ public class WarehouseManager implements Writable {
     }
 
     public void dropWarehouse(DropWarehouseStmt stmt) throws DdlException {
-        String warehouseName = stmt.getFullWhName();
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
+            throw new RuntimeException(new DdlException("unsupported statement in shared_nothing mode"));
+        }
+
+        String warehouseName = stmt.getWarehouseName();
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
             Preconditions.checkState(fullNameToWh.containsKey(warehouseName),
                     "Warehouse '%s' doesn't exist", warehouseName);
@@ -130,7 +139,7 @@ public class WarehouseManager implements Writable {
         }
     }
 
-    public void replayDropWarehouse(String warehouseName) throws DdlException {
+    public void replayDropWarehouse(String warehouseName) {
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
             Preconditions.checkState(fullNameToWh.containsKey(warehouseName),
                     "Warehouse '%s' doesn't exist", warehouseName);
@@ -141,7 +150,11 @@ public class WarehouseManager implements Writable {
     }
 
     public void suspendWarehouse(SuspendWarehouseStmt stmt) throws DdlException {
-        String warehouseName = stmt.getFullWhName();
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
+            throw new RuntimeException(new DdlException("unsupported statement in shared_nothing mode"));
+        }
+
+        String warehouseName = stmt.getWarehouseName();
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
             Preconditions.checkState(fullNameToWh.containsKey(warehouseName),
                     "Warehouse '%s' doesn't exist", warehouseName);
@@ -153,10 +166,36 @@ public class WarehouseManager implements Writable {
         }
     }
 
-    public void replaySuspendWarehouse(String whName) throws DdlException {
+    public void replaySuspendWarehouse(String whName) {
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
             Warehouse warehouse = fullNameToWh.get(whName);
             warehouse.suspendSelf();
+        }
+    }
+
+    public void resumeWarehouse(ResumeWarehouseStmt stmt) throws DdlException {
+        if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
+            throw new RuntimeException(new DdlException("unsupported statement in shared_nothing mode"));
+        }
+
+        String warehouseName = stmt.getWarehouseName();
+        try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
+            Preconditions.checkState(fullNameToWh.containsKey(warehouseName),
+                    "Warehouse '%s' doesn't exist", warehouseName);
+            Warehouse warehouse = fullNameToWh.get(warehouseName);
+            warehouse.resumeSelf();
+            OpWarehouseLog log = new OpWarehouseLog(warehouseName);
+            GlobalStateMgr.getCurrentState().getEditLog().logResumeWarehouse(log);
+        }
+    }
+
+    public void replayResumeWarehouse(String warehouseName) throws DdlException {
+        try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
+            Preconditions.checkState(fullNameToWh.containsKey(warehouseName),
+                    "Warehouse '%s' doesn't exist", warehouseName);
+
+            Warehouse warehouse = fullNameToWh.get(warehouseName);
+            warehouse.resumeSelf();
         }
     }
 

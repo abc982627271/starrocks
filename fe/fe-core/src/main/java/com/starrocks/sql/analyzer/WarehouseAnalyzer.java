@@ -49,7 +49,7 @@ public class WarehouseAnalyzer {
 
         @Override
         public Void visitCreateWarehouseStatement(CreateWarehouseStmt statement, ConnectContext context) {
-            String whName = statement.getFullWhName();
+            String whName = statement.getWarehouseName();
             if (Strings.isNullOrEmpty(whName)) {
                 throw new SemanticException("warehouse name can not be null or empty");
             }
@@ -71,7 +71,7 @@ public class WarehouseAnalyzer {
 
         @Override
         public Void visitSuspendWarehouseStatement(SuspendWarehouseStmt statement, ConnectContext context) {
-            String whName = statement.getFullWhName();
+            String whName = statement.getWarehouseName();
             if (Strings.isNullOrEmpty(whName)) {
                 throw new SemanticException("warehouse name can not be null or empty");
             }
@@ -79,7 +79,7 @@ public class WarehouseAnalyzer {
         }
 
         public Void visitResumeWarehouseStatement(ResumeWarehouseStmt statement, ConnectContext context) {
-            String whName = statement.getFullWhName();
+            String whName = statement.getWarehouseName();
             if (Strings.isNullOrEmpty(whName)) {
                 throw new SemanticException("warehouse name can not be null or empty");
             }
@@ -88,7 +88,7 @@ public class WarehouseAnalyzer {
 
         @Override
         public Void visitDropWarehouseStatement(DropWarehouseStmt statement, ConnectContext context) {
-            String whName = statement.getFullWhName();
+            String whName = statement.getWarehouseName();
             if (Strings.isNullOrEmpty(whName)) {
                 throw new SemanticException("warehouse name can not be null or empty");
             }
