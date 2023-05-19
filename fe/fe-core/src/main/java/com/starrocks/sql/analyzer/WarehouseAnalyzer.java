@@ -93,7 +93,7 @@ public class WarehouseAnalyzer {
                 throw new SemanticException("warehouse name can not be null or empty");
             }
             if (whName.equalsIgnoreCase(WarehouseManager.DEFAULT_WAREHOUSE_NAME)) {
-                throw new SemanticException("'default_warehouse' is forbidden to drop!");
+                throw new SemanticException("'default_warehouse' is forbidden to drop");
             }
             return null;
         }

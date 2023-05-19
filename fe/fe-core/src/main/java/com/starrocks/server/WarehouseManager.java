@@ -28,6 +28,7 @@ import com.starrocks.persist.OpWarehouseLog;
 import com.starrocks.persist.gson.GsonUtils;
 import com.starrocks.sql.ast.CreateWarehouseStmt;
 import com.starrocks.sql.ast.DropWarehouseStmt;
+import com.starrocks.sql.ast.SuspendWarehouseStmt;
 import com.starrocks.warehouse.LocalWarehouse;
 import com.starrocks.warehouse.Warehouse;
 import org.apache.logging.log4j.LogManager;
@@ -136,6 +137,19 @@ public class WarehouseManager implements Writable {
             Warehouse warehouse = fullNameToWh.get(warehouseName);
             fullNameToWh.remove(warehouseName);
             idToWh.remove(warehouse.getId());
+        }
+    }
+
+    public void suspendWarehouse(SuspendWarehouseStmt stmt) throws DdlException {
+        String warehouseName = stmt.getFullWhName();
+        try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
+            Preconditions.checkState(fullNameToWh.containsKey(warehouseName),
+                    "Warehouse '%s' doesn't exist", warehouseName);
+
+            Warehouse warehouse = fullNameToWh.get(warehouseName);
+            warehouse.suspendSelf(false);
+            OpWarehouseLog log = new OpWarehouseLog(warehouseName);
+            GlobalStateMgr.getCurrentState().getEditLog().logSuspendWarehouse(log);
         }
     }
 

@@ -78,5 +78,11 @@ public class LocalWarehouse extends Warehouse {
     @Override
     public void dropSelf() {
         // do nothing
+
+    }
+
+    @Override
+    public void suspendSelf() {
+
     }
 }
