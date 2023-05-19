@@ -87,7 +87,7 @@ public abstract class Warehouse implements Writable {
 
     public abstract void resumeSelf();
 
-    public abstract void suspendSelf();
+    public abstract void suspendSelf() throws DdlException;
 
     @Override
     public void write(DataOutput out) throws IOException {
