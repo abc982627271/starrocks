@@ -830,9 +830,6 @@ public class DDLStmtExecutor {
 
         @Override
         public ShowResultSet visitCreateWarehouseStatement(CreateWarehouseStmt stmt, ConnectContext context) {
-            if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
-                throw new RuntimeException(new DdlException("unsupported statement"));
-            }
             ErrorReport.wrapWithRuntimeException(() -> {
                 context.getGlobalStateMgr().getWarehouseMgr().createWarehouse(stmt);
             });
@@ -846,9 +843,6 @@ public class DDLStmtExecutor {
 
         @Override
         public ShowResultSet visitSuspendWarehouseStatement(SuspendWarehouseStmt stmt, ConnectContext context) {
-            if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
-                throw new RuntimeException(new DdlException("unsupported statement"));
-            }
             ErrorReport.wrapWithRuntimeException(() -> {
                 context.getGlobalStateMgr().getWarehouseMgr().suspendWarehouse(stmt);
             });
@@ -857,15 +851,15 @@ public class DDLStmtExecutor {
 
         @Override
         public ShowResultSet visitResumeWarehouseStatement(ResumeWarehouseStmt stmt, ConnectContext context) {
-            throw new RuntimeException(new DdlException("unsupported statement"));
+            ErrorReport.wrapWithRuntimeException(() -> {
+                context.getGlobalStateMgr().getWarehouseMgr().resumeWarehouse(stmt);
+            });
+            return null;
         }
 
 
         @Override
         public ShowResultSet visitDropWarehouseStatement(DropWarehouseStmt stmt, ConnectContext context) {
-            if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
-                throw new RuntimeException(new DdlException("unsupported statement"));
-            }
             ErrorReport.wrapWithRuntimeException(() -> {
                 context.getGlobalStateMgr().getWarehouseMgr().dropWarehouse(stmt);
             });

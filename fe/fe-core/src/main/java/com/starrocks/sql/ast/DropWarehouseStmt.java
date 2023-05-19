@@ -30,7 +30,7 @@ public class DropWarehouseStmt extends DdlStmt {
         this.warehouseName = warehouseName;
     }
 
-    public String getFullWhName() {
+    public String getWarehouseName() {
         return warehouseName;
     }
 

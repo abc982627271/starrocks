@@ -28,7 +28,7 @@ public class ResumeWarehouseStmt extends DdlStmt {
         this.whName = whName;
     }
 
-    public String getFullWhName() {
+    public String getWarehouseName() {
         return whName;
     }
 

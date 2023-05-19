@@ -55,7 +55,7 @@ public abstract class Warehouse implements Writable {
         return id;
     }
 
-    public String getFullName() {
+    public String getName() {
         return name;
     }
 
@@ -87,7 +87,9 @@ public abstract class Warehouse implements Writable {
     public abstract void dropSelf() throws DdlException;
 >>>>>>> a83feff6ee (update)
 
-    public abstract void suspendSelf() throws DdlException;
+    public abstract void suspendSelf();
+
+    public abstract void resumeSelf();
 
     @Override
     public void write(DataOutput out) throws IOException {
