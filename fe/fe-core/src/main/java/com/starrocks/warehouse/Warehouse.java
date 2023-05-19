@@ -83,6 +83,8 @@ public abstract class Warehouse implements Writable {
 
     public abstract void dropSelf();
 
+    public abstract void suspendSelf();
+
     @Override
     public void write(DataOutput out) throws IOException {
         String json = GsonUtils.GSON.toJson(this);

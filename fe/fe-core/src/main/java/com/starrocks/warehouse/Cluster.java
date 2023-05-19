@@ -20,9 +20,9 @@ import com.starrocks.common.UserException;
 import com.starrocks.common.io.Text;
 import com.starrocks.common.io.Writable;
 import com.starrocks.common.proc.BaseProcResult;
-import com.starrocks.lake.StarOSAgent;
 import com.starrocks.persist.gson.GsonUtils;
 import com.starrocks.server.GlobalStateMgr;
+import com.starrocks.server.RunMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,7 +42,14 @@ public class Cluster implements Writable {
 
     public Cluster(long id) {
         this.id = id;
-        workerGroupId = StarOSAgent.DEFAULT_WORKER_GROUP_ID;
+        if (RunMode.allowCreateLakeTable()) {
+            try {
+                workerGroupId = GlobalStateMgr.getCurrentStarOSAgent().createWorkerGroup("x0");
+            } catch (DdlException e) {
+                LOG.warn(e);
+                System.exit(-1);
+            }
+        }
     }
 
     public long getId() {

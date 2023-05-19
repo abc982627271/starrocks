@@ -854,7 +854,13 @@ public class DDLStmtExecutor {
 
         @Override
         public ShowResultSet visitSuspendWarehouseStatement(SuspendWarehouseStmt stmt, ConnectContext context) {
-            throw new RuntimeException(new DdlException("unsupported statement"));
+            if (RunMode.getCurrentRunMode() == RunMode.SHARED_NOTHING) {
+                throw new RuntimeException(new DdlException("unsupported statement"));
+            }
+            ErrorReport.wrapWithRuntimeException(() -> {
+                context.getGlobalStateMgr().getWarehouseMgr().suspendWarehouse(stmt);
+            });
+            return null;
         }
 
         @Override
