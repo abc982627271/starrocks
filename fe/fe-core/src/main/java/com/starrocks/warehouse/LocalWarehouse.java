@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.annotations.SerializedName;
+import com.staros.util.LockCloseable;
 import com.starrocks.common.DdlException;
 import com.starrocks.common.proc.BaseProcResult;
 import com.starrocks.server.GlobalStateMgr;
@@ -27,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 // on-premise
 public class LocalWarehouse extends Warehouse {
@@ -35,6 +37,7 @@ public class LocalWarehouse extends Warehouse {
     @SerializedName(value = "cluster")
     Cluster cluster;
 
+<<<<<<< HEAD
     public static final long DEFAULT_CLUSTER_ID = 0L;
 
     public static final ImmutableList<String> CLUSTER_PROC_NODE_TITLE_NAMES = new ImmutableList.Builder<String>()
@@ -44,6 +47,9 @@ public class LocalWarehouse extends Warehouse {
             .add("Pending")
             .add("Running")
             .build();
+=======
+    private ReentrantReadWriteLock rwLock;
+>>>>>>> a83feff6ee (update)
 
     public LocalWarehouse(long id, String name) {
         super(id, name);
@@ -87,18 +93,6 @@ public class LocalWarehouse extends Warehouse {
 
     @Override
     public void suspendSelf() {
-        this.state = WarehouseState.SUSPENDED;
-    }
 
-    @Override
-    public void resumeSelf() {
-        this.state = WarehouseState.RUNNING;
-    }
-
-    private void releaseComputeNodes() throws DdlException {
-        long workerGroupId = cluster.getWorkerGroupId();
-        GlobalStateMgr.getCurrentStarOSAgent().deleteWorkerGroup(workerGroupId);
-        // for debug
-        LOG.info("release worker group {}", workerGroupId);
     }
 }
