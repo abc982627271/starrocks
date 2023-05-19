@@ -147,9 +147,16 @@ public class WarehouseManager implements Writable {
                     "Warehouse '%s' doesn't exist", warehouseName);
 
             Warehouse warehouse = fullNameToWh.get(warehouseName);
-            warehouse.suspendSelf(false);
+            warehouse.suspendSelf();
             OpWarehouseLog log = new OpWarehouseLog(warehouseName);
             GlobalStateMgr.getCurrentState().getEditLog().logSuspendWarehouse(log);
+        }
+    }
+
+    public void replaySuspendWarehouse(String whName) throws DdlException {
+        try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
+            Warehouse warehouse = fullNameToWh.get(whName);
+            warehouse.suspendSelf();
         }
     }
 

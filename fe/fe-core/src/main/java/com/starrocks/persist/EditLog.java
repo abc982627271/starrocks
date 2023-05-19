@@ -167,6 +167,20 @@ public class EditLog {
                     warehouseMgr.replayCreateWarehouse(wh);
                     break;
                 }
+                case OperationType.OP_DROP_WH: {
+                    OpWarehouseLog log = (OpWarehouseLog) journal.getData();
+                    String warehouseName = log.getWarehouseName();
+                    WarehouseManager warehouseMgr = globalStateMgr.getWarehouseMgr();
+                    warehouseMgr.replayDropWarehouse(warehouseName);
+                    break;
+                }
+                case OperationType.OP_SUSPEND_WH: {
+                    OpWarehouseLog log = (OpWarehouseLog) journal.getData();
+                    String warehouseName = log.getWarehouseName();
+                    WarehouseManager warehouseMgr = globalStateMgr.getWarehouseMgr();
+                    warehouseMgr.replaySuspendWarehouse(warehouseName);
+                    break;
+                }
                 case OperationType.OP_SAVE_AUTO_INCREMENT_ID:
                 case OperationType.OP_DELETE_AUTO_INCREMENT_ID: {
                     AutoIncrementInfo info = (AutoIncrementInfo) journal.getData();
@@ -1780,5 +1794,9 @@ public class EditLog {
 
     public void logDropWarehouse(OpWarehouseLog log) {
         logEdit(OperationType.OP_DROP_WH, log);
+    }
+
+    public void logSuspendWarehouse(OpWarehouseLog log) {
+        logEdit(OperationType.OP_SUSPEND_WH, log);
     }
 }
