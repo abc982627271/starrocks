@@ -824,7 +824,8 @@ public class JournalEntity implements Writable {
                 isRead = true;
                 break;
             }
-            case OperationType.OP_DROP_WH: {
+            case OperationType.OP_DROP_WH:
+            case OperationType.OP_SUSPEND_WH: {
                 data = OpWarehouseLog.read(in);
                 isRead = true;
                 break;

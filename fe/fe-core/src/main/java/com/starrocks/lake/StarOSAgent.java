@@ -647,6 +647,14 @@ public class StarOSAgent {
         return result.getGroupId();
     }
 
+    public void deleteWorkerGroup(long groupId) throws DdlException {
+        try {
+            client.deleteWorkerGroup(serviceId, groupId);
+        } catch (StarClientException e) {
+            LOG.warn("Failed to delete worker group {}. error: {}", groupId, e.getMessage());
+            throw new DdlException("Failed to delete worker group. error: " + e.getMessage());
+        }
+    }
 
     public List<Long> getWorkersByWorkerGroup(long workerGroupId) throws UserException {
         List<Long> nodeIds = new ArrayList<>();

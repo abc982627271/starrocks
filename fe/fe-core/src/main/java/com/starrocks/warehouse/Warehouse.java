@@ -79,11 +79,15 @@ public abstract class Warehouse implements Writable {
 
     public abstract void setClusters(Map<Long, Cluster> clusters) throws DdlException;
 
+<<<<<<< HEAD
     public abstract List<List<String>> getClusterInfo();
 
     public abstract void dropSelf();
+=======
+    public abstract void dropSelf() throws DdlException;
+>>>>>>> a83feff6ee (update)
 
-    public abstract void suspendSelf();
+    public abstract void suspendSelf() throws DdlException;
 
     @Override
     public void write(DataOutput out) throws IOException {
