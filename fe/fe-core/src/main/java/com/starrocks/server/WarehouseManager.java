@@ -16,7 +16,6 @@ package com.starrocks.server;
 
 import autovalue.shaded.com.google.common.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.gson.annotations.SerializedName;
 import com.staros.util.LockCloseable;
 import com.starrocks.common.DdlException;
 import com.starrocks.common.io.Text;
@@ -54,7 +53,7 @@ public class WarehouseManager implements Writable {
     public static final long DEFAULT_WAREHOUSE_ID = 0L;
 
     private Map<Long, Warehouse> idToWh = new HashMap<>();
-    @SerializedName(value = "fullNameToWh")
+    //@SerializedName(value = "fullNameToWh")
     private Map<String, Warehouse> fullNameToWh = new HashMap<>();
 
     private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
@@ -218,11 +217,6 @@ public class WarehouseManager implements Writable {
             String s = Text.readString(dis);
             WarehouseManager data = GsonUtils.GSON.fromJson(s, WarehouseManager.class);
             if (data != null) {
-                if (data.fullNameToWh != null) {
-                    for (Warehouse warehouse : data.fullNameToWh.values()) {
-                        replayCreateWarehouse(warehouse);
-                    }
-                }
                 warehouseCount = data.fullNameToWh.size();
             }
             checksum ^= warehouseCount;
