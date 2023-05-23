@@ -2463,8 +2463,7 @@ public class ShowExecutor {
     // show warehouse statement
     private void handleShowWarehouses() {
         ShowWarehousesStmt showStmt = (ShowWarehousesStmt) stmt;
-        GlobalStateMgr globalStateMgr = GlobalStateMgr.getCurrentState();
-        WarehouseManager warehouseMgr = globalStateMgr.getWarehouseMgr();
+        WarehouseManager warehouseMgr = GlobalStateMgr.getCurrentWarehouseMgr();
         List<List<String>> rowSet = warehouseMgr.getWarehousesInfo().stream()
                 .sorted(Comparator.comparing(o -> o.get(0))).collect(Collectors.toList());
         resultSet = new ShowResultSet(showStmt.getMetaData(), rowSet);
