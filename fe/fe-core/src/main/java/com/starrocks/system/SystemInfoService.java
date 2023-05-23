@@ -172,6 +172,27 @@ public class SystemInfoService {
         computeNode.setBackendState(BackendState.using);
     }
 
+<<<<<<< HEAD
+=======
+    private void addComputeNodeIntoWarehouse(ComputeNode computeNode) {
+        final String warehouseName = ConnectContext.get().getCurrentWarehouse();
+        Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(warehouseName);
+        if (warehouse != null) {
+            com.starrocks.warehouse.Cluster cluster = warehouse.getAnyAvailableCluster();
+            cluster.addNode(computeNode.getId());
+            computeNode.setWorkerGroupId(cluster.getWorkerGroupId());
+        }
+    }
+
+    private void dropComputeNodeFromWarehouse(ComputeNode computeNode) {
+        final String warehouseName = ConnectContext.get().getCurrentWarehouse();
+        Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(warehouseName);
+        if (warehouse != null) {
+            warehouse.getAnyAvailableCluster().dropNode(computeNode.getId());
+        }
+    }
+
+>>>>>>> f755b777bb (upt)
     public boolean isSingleBackendAndComputeNode() {
         return idToBackendRef.size() + idToComputeNodeRef.size() == 1;
     }
