@@ -98,5 +98,4 @@ public class Cluster implements Writable {
         String json = Text.readString(in);
         return GsonUtils.GSON.fromJson(json, Cluster.class);
     }
-
 }

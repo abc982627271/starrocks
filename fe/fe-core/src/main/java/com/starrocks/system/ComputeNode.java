@@ -97,6 +97,9 @@ public class ComputeNode implements IComputable, Writable {
     @SerializedName("workerGroupId")
     private long workerGroupId = -1L;
 
+    @SerializedName("warehouseName")
+    private String warehouseName;
+
     private volatile int numRunningQueries = 0;
     private volatile long memLimitBytes = 0;
     private volatile long memUsedBytes = 0;
@@ -203,6 +206,14 @@ public class ComputeNode implements IComputable, Writable {
 
     public void setWorkerGroupId(long workerGroupId) {
         this.workerGroupId = workerGroupId;
+    }
+
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
+    public void setWarehouseName(String warehouseName) {
+        this.warehouseName = warehouseName;
     }
 
     // for test only

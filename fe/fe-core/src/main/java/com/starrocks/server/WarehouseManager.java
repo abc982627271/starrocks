@@ -16,13 +16,12 @@ package com.starrocks.server;
 
 import autovalue.shaded.com.google.common.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.gson.annotations.SerializedName;
 import com.staros.util.LockCloseable;
 import com.starrocks.common.DdlException;
 import com.starrocks.common.io.Text;
 import com.starrocks.common.io.Writable;
 import com.starrocks.common.proc.BaseProcResult;
-import com.starrocks.common.proc.ProcNodeInterface;
-import com.starrocks.common.proc.ProcResult;
 import com.starrocks.persist.OpWarehouseLog;
 import com.starrocks.persist.gson.GsonUtils;
 import com.starrocks.sql.ast.CreateWarehouseStmt;
@@ -53,11 +52,11 @@ public class WarehouseManager implements Writable {
     public static final long DEFAULT_WAREHOUSE_ID = 0L;
 
     private Map<Long, Warehouse> idToWh = new HashMap<>();
-    //@SerializedName(value = "fullNameToWh")
+    @SerializedName(value = "fullNameToWh")
     private Map<String, Warehouse> fullNameToWh = new HashMap<>();
 
     private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
-    private final WarehouseProcNode procNode = new WarehouseProcNode();
+
     public static final ImmutableList<String> WAREHOUSE_PROC_NODE_TITLE_NAMES = new ImmutableList.Builder<String>()
             .add("Warehouse")
             .add("State")
@@ -228,7 +227,18 @@ public class WarehouseManager implements Writable {
     }
 
     public List<List<String>> getWarehousesInfo() {
-        return procNode.fetchResult().getRows();
+        BaseProcResult result = new BaseProcResult();
+        result.setNames(WAREHOUSE_PROC_NODE_TITLE_NAMES);
+        try (LockCloseable lock = new LockCloseable(rwLock.readLock())) {
+            for (Map.Entry<String, Warehouse> entry : fullNameToWh.entrySet()) {
+                Warehouse warehouse = entry.getValue();
+                if (warehouse == null) {
+                    continue;
+                }
+                warehouse.getProcNodeData(result);
+            }
+        }
+        return result.getRows();
     }
 
     @Override
@@ -237,22 +247,4 @@ public class WarehouseManager implements Writable {
         Text.writeString(out, json);
     }
 
-    public class WarehouseProcNode implements ProcNodeInterface {
-
-        @Override
-        public ProcResult fetchResult() {
-            BaseProcResult result = new BaseProcResult();
-            result.setNames(WAREHOUSE_PROC_NODE_TITLE_NAMES);
-            try (LockCloseable lock = new LockCloseable(rwLock.readLock())) {
-                for (Map.Entry<String, Warehouse> entry : fullNameToWh.entrySet()) {
-                    Warehouse warehouse = entry.getValue();
-                    if (warehouse == null) {
-                        continue;
-                    }
-                    warehouse.getProcNodeData(result);
-                }
-            }
-            return result;
-        }
-    }
 }
