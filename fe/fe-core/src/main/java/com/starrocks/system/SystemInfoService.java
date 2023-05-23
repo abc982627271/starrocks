@@ -181,6 +181,7 @@ public class SystemInfoService {
             com.starrocks.warehouse.Cluster cluster = warehouse.getAnyAvailableCluster();
             cluster.addNode(computeNode.getId());
             computeNode.setWorkerGroupId(cluster.getWorkerGroupId());
+            computeNode.setWarehouseName(warehouseName);
         }
     }
 
@@ -986,8 +987,8 @@ public class SystemInfoService {
         newComputeNode.setBackendState(BackendState.using);
         idToComputeNodeRef.put(newComputeNode.getId(), newComputeNode);
 
-        // to add compute to DEFAULT_CLUSTER
         if (newComputeNode.getBackendState() == BackendState.using) {
+            // to add compute to DEFAULT_CLUSTER
             final Cluster cluster = GlobalStateMgr.getCurrentState().getCluster();
             if (null != cluster) {
                 // replay log
@@ -995,6 +996,12 @@ public class SystemInfoService {
             } else {
                 // This happens in loading image when fe is restarted, because loadCluster is after loadComputeNode,
                 // cluster is not created. CN in cluster will be updated in loadCluster.
+            }
+
+            // to add be to warehouse
+            Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(newComputeNode.getWarehouseName());
+            if (warehouse != null) {
+                warehouse.getAnyAvailableCluster().addNode(newComputeNode.getId());
             }
         }
     }
@@ -1008,8 +1015,8 @@ public class SystemInfoService {
         copiedReportVerions.put(newBackend.getId(), new AtomicLong(0L));
         idToReportVersionRef = ImmutableMap.copyOf(copiedReportVerions);
 
-        // to add be to DEFAULT_CLUSTER
         if (newBackend.getBackendState() == BackendState.using) {
+            // to add be to DEFAULT_CLUSTER
             final Cluster cluster = GlobalStateMgr.getCurrentState().getCluster();
             if (null != cluster) {
                 // replay log
@@ -1018,7 +1025,14 @@ public class SystemInfoService {
                 // This happens in loading image when fe is restarted, because loadCluster is after loadBackend,
                 // cluster is not created. Be in cluster will be updated in loadCluster.
             }
+
+            // to add be to warehouse
+            Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(newBackend.getWarehouseName());
+            if (warehouse != null) {
+                warehouse.getAnyAvailableCluster().addNode(newBackend.getId());
+            }
         }
+
     }
 
     public void replayDropComputeNode(long computeNodeId) {
@@ -1041,6 +1055,12 @@ public class SystemInfoService {
             }
         } else {
             LOG.error("Cluster DEFAULT_CLUSTER " + DEFAULT_CLUSTER + " no exist.");
+        }
+
+        // update warehouse
+        Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(cn.getWarehouseName());
+        if (warehouse != null) {
+            warehouse.getAnyAvailableCluster().dropNode(cn.getId());
         }
     }
 
@@ -1071,6 +1091,13 @@ public class SystemInfoService {
         } else {
             LOG.error("Cluster {} no exist.", SystemInfoService.DEFAULT_CLUSTER);
         }
+
+        // update warehouse
+        Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(backend.getWarehouseName());
+        if (warehouse != null) {
+            warehouse.getAnyAvailableCluster().dropNode(backend.getId());
+        }
+
     }
 
     public void updateBackendState(Backend be) {
