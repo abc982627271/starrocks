@@ -1036,7 +1036,9 @@ public class SystemInfoService {
     }
 
     public void replayDropComputeNode(long computeNodeId) {
-        LOG.debug("replayDropComputeNode: {}", computeNodeId);
+        // for debug
+        // LOG.debug("replayDropComputeNode: {}", computeNodeId);
+        LOG.info("replayDropComputeNode: {}", computeNodeId);
         // update idToComputeNode
         ComputeNode cn = idToComputeNodeRef.remove(computeNodeId);
 
@@ -1059,8 +1061,10 @@ public class SystemInfoService {
 
         // update warehouse
         Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(cn.getWarehouseName());
+        // for debug
+        LOG.info("warehouse name in replayDropComputeNode is {}", cn.getWarehouseName());
         if (warehouse != null) {
-            warehouse.getAnyAvailableCluster().dropNode(cn.getId());
+            warehouse.getAnyAvailableCluster().dropNode(computeNodeId);
         }
     }
 
