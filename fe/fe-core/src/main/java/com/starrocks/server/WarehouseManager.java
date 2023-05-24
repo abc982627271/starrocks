@@ -216,6 +216,9 @@ public class WarehouseManager implements Writable {
             String s = Text.readString(dis);
             WarehouseManager data = GsonUtils.GSON.fromJson(s, WarehouseManager.class);
             if (data != null) {
+                for (Warehouse warehouse : data.fullNameToWh.values()) {
+                    replayCreateWarehouse(warehouse);
+                }
                 warehouseCount = data.fullNameToWh.size();
             }
             checksum ^= warehouseCount;
