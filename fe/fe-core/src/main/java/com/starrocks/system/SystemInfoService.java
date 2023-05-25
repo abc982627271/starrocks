@@ -180,8 +180,6 @@ public class SystemInfoService {
         if (warehouse != null) {
             com.starrocks.warehouse.Cluster cluster = warehouse.getAnyAvailableCluster();
             cluster.addNode(computeNode.getId());
-            computeNode.setWorkerGroupId(cluster.getWorkerGroupId());
-            computeNode.setWarehouseName(warehouseName);
         }
     }
 
