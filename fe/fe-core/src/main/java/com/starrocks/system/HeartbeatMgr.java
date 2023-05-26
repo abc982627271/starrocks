@@ -236,9 +236,7 @@ public class HeartbeatMgr extends FrontendDaemon {
                             // addWorker
                             int starletPort = computeNode.getStarletPort();
                             if (starletPort != 0) {
-                                Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().
-                                        getDefaultWarehouse();
-                                long workerGroupId = warehouse.getAnyAvailableCluster().getWorkerGroupId();
+                                long workerGroupId = computeNode.getWorkerGroupId();
                                 String workerAddr = computeNode.getHost() + ":" + starletPort;
 
                                 GlobalStateMgr.getCurrentStarOSAgent().
