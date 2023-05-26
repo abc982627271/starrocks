@@ -94,6 +94,9 @@ public class ComputeNode implements IComputable, Writable {
     @SerializedName("lastWriteFail")
     private volatile boolean lastWriteFail = false;
 
+    @SerializedName("workerGroupId")
+    private long workerGroupId = 0;
+
     private volatile int numRunningQueries = 0;
     private volatile long memLimitBytes = 0;
     private volatile long memUsedBytes = 0;
@@ -225,6 +228,14 @@ public class ComputeNode implements IComputable, Writable {
             return true;
         }
         return false;
+    }
+
+    public long getWorkerGroupId() {
+        return workerGroupId;
+    }
+
+    public void setWorkerGroupId(long workerGroupId) {
+        this.workerGroupId = workerGroupId;
     }
 
     public void setId(long id) {
