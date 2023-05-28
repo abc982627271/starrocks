@@ -238,6 +238,8 @@ public class HeartbeatMgr extends FrontendDaemon {
                             if (starletPort != 0) {
                                 long workerGroupId = computeNode.getWorkerGroupId();
                                 String workerAddr = computeNode.getHost() + ":" + starletPort;
+                                // for debug
+                                LOG.info("workerGroupId for computeNode {} is {}", workerAddr, workerGroupId);
 
                                 GlobalStateMgr.getCurrentStarOSAgent().
                                             addWorker(computeNode.getId(), workerAddr, workerGroupId);

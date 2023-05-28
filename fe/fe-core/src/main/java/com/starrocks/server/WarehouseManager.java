@@ -68,9 +68,11 @@ public class WarehouseManager implements Writable {
 
     public void initDefaultWarehouse() {
         // gen a default warehouse
+        // NOTE: default warehouse use DEFAULT_WORKER_GROUP_ID, which is 0,
+        // so it is unnecessary to create a worker group for it.
         try (LockCloseable lock = new LockCloseable(rwLock.writeLock())) {
             Warehouse wh = new LocalWarehouse(DEFAULT_WAREHOUSE_ID,
-                    DEFAULT_WAREHOUSE_NAME);
+                    DEFAULT_WAREHOUSE_NAME, false);
             fullNameToWh.put(wh.getName(), wh);
             idToWh.put(wh.getId(), wh);
             wh.setExist(true);
