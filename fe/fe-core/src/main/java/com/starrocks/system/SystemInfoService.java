@@ -180,7 +180,6 @@ public class SystemInfoService {
         // for debug
         LOG.info("currentWarehouse is {}", currentWarehouse);
         Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(currentWarehouse);
-        computeNode.setWarehouseName(currentWarehouse);
         computeNode.setWorkerGroupId(warehouse.getAnyAvailableCluster().getWorkerGroupId());
     }
 
