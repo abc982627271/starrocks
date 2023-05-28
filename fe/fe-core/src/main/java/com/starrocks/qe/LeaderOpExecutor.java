@@ -174,6 +174,9 @@ public class LeaderOpExecutor {
         if (setStmt != null) {
             params.setModified_variables_sql(AstToSQLBuilder.toSQL(setStmt));
         }
+
+        // forward current warehouse
+        params.setWarehouse(ctx.getCurrentWarehouse());
         LOG.info("Forward statement {} to Leader {}", ctx.getStmtId(), thriftAddress);
 
         result = FrontendServiceProxy.call(thriftAddress,
