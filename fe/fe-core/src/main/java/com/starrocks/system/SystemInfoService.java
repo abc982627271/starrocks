@@ -63,6 +63,7 @@ import com.starrocks.common.util.NetUtils;
 import com.starrocks.metric.MetricRepo;
 import com.starrocks.persist.DropComputeNodeLog;
 import com.starrocks.persist.gson.GsonUtils;
+import com.starrocks.qe.ConnectContext;
 import com.starrocks.qe.ShowResultSet;
 import com.starrocks.qe.ShowResultSetMetaData;
 import com.starrocks.server.GlobalStateMgr;
@@ -74,6 +75,7 @@ import com.starrocks.system.Backend.BackendState;
 import com.starrocks.thrift.TNetworkAddress;
 import com.starrocks.thrift.TStatusCode;
 import com.starrocks.thrift.TStorageMedium;
+import com.starrocks.warehouse.Warehouse;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -159,6 +161,8 @@ public class SystemInfoService {
         idToComputeNodeRef.put(newComputeNode.getId(), newComputeNode);
         setComputeNodeOwner(newComputeNode);
 
+        addComuteNodeToWarehouse(newComputeNode);
+
         // log
         GlobalStateMgr.getCurrentState().getEditLog().logAddComputeNode(newComputeNode);
         LOG.info("finished to add {} ", newComputeNode);
@@ -169,6 +173,15 @@ public class SystemInfoService {
         Preconditions.checkState(cluster != null);
         cluster.addComputeNode(computeNode.getId());
         computeNode.setBackendState(BackendState.using);
+    }
+
+    public void addComuteNodeToWarehouse(ComputeNode computeNode) {
+        String currentWarehouse = ConnectContext.get().getCurrentWarehouse();
+        // for debug
+        LOG.info("currentWarehouse is {}", currentWarehouse);
+        Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(currentWarehouse);
+        computeNode.setWarehouseName(currentWarehouse);
+        computeNode.setWorkerGroupId(warehouse.getAnyAvailableCluster().getWorkerGroupId());
     }
 
     public boolean isSingleBackendAndComputeNode() {
@@ -230,6 +243,8 @@ public class SystemInfoService {
 
         // add backend to DEFAULT_CLUSTER
         setBackendOwner(newBackend);
+
+        addComuteNodeToWarehouse(newBackend);
 
         // log
         GlobalStateMgr.getCurrentState().getEditLog().logAddBackend(newBackend);

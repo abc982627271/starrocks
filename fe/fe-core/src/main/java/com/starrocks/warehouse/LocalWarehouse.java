@@ -45,9 +45,13 @@ public class LocalWarehouse extends Warehouse {
             .add("Running")
             .build();
 
-    public LocalWarehouse(long id, String name) {
+    public LocalWarehouse(long id, String name, boolean needCreateWorkerGroup) {
         super(id, name);
-        cluster = new Cluster(DEFAULT_CLUSTER_ID);
+        cluster = new Cluster(DEFAULT_CLUSTER_ID, needCreateWorkerGroup);
+    }
+
+    public LocalWarehouse(long id, String name) {
+        this(id, name, true);
     }
 
     @Override

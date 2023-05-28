@@ -39,11 +39,11 @@ public class Cluster implements Writable {
     @SerializedName(value = "id")
     private long id;
     @SerializedName(value = "wgid")
-    private long workerGroupId;
+    private long workerGroupId = 0;
 
-    public Cluster(long id) {
+    public Cluster(long id, boolean needCreateWorkerGroup) {
         this.id = id;
-        if (RunMode.allowCreateLakeTable()) {
+        if (RunMode.allowCreateLakeTable() && needCreateWorkerGroup) {
             try {
                 workerGroupId = GlobalStateMgr.getCurrentStarOSAgent().createWorkerGroup("x0");
             } catch (DdlException e) {
