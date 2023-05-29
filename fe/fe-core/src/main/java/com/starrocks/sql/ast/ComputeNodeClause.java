@@ -27,10 +27,19 @@ public class ComputeNodeClause extends AlterClause {
     protected List<String> hostPorts;
     private final List<Pair<String, Integer>> hostPortPairs;
 
+    protected String warehouseName;
+
     public ComputeNodeClause(List<String> hostPorts, NodePosition pos) {
         super(AlterOpType.ALTER_OTHER, pos);
         this.hostPorts = hostPorts;
         this.hostPortPairs = new LinkedList<>();
+    }
+
+    public ComputeNodeClause(List<String> hostPorts, NodePosition pos, String warehouseName) {
+        super(AlterOpType.ALTER_OTHER, pos);
+        this.hostPorts = hostPorts;
+        this.hostPortPairs = new LinkedList<>();
+        this.warehouseName = warehouseName;
     }
 
     public List<Pair<String, Integer>> getHostPortPairs() {
