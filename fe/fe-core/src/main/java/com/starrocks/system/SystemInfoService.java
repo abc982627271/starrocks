@@ -63,11 +63,11 @@ import com.starrocks.common.util.NetUtils;
 import com.starrocks.metric.MetricRepo;
 import com.starrocks.persist.DropComputeNodeLog;
 import com.starrocks.persist.gson.GsonUtils;
-import com.starrocks.qe.ConnectContext;
 import com.starrocks.qe.ShowResultSet;
 import com.starrocks.qe.ShowResultSetMetaData;
 import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.server.RunMode;
+import com.starrocks.server.WarehouseManager;
 import com.starrocks.service.FrontendOptions;
 import com.starrocks.sql.ast.DropBackendClause;
 import com.starrocks.sql.ast.ModifyBackendAddressClause;
@@ -121,7 +121,7 @@ public class SystemInfoService {
         pathHashToDishInfoRef = ImmutableMap.of();
     }
 
-    public void addComputeNodes(List<Pair<String, Integer>> hostPortPairs)
+    public void addComputeNodes(List<Pair<String, Integer>> hostPortPairs, String warehouseName)
             throws DdlException {
 
         for (Pair<String, Integer> pair : hostPortPairs) {
@@ -135,7 +135,7 @@ public class SystemInfoService {
         }
 
         for (Pair<String, Integer> pair : hostPortPairs) {
-            addComputeNode(pair.first, pair.second);
+            addComputeNode(pair.first, pair.second, warehouseName);
         }
     }
 
@@ -156,12 +156,12 @@ public class SystemInfoService {
     }
 
     // Final entry of adding compute node
-    private void addComputeNode(String host, int heartbeatPort) {
+    private void addComputeNode(String host, int heartbeatPort, String warehouseName) {
         ComputeNode newComputeNode = new ComputeNode(GlobalStateMgr.getCurrentState().getNextId(), host, heartbeatPort);
         idToComputeNodeRef.put(newComputeNode.getId(), newComputeNode);
         setComputeNodeOwner(newComputeNode);
 
-        addComuteNodeToWarehouse(newComputeNode);
+        addComuteNodeToWarehouse(newComputeNode, warehouseName);
 
         // log
         GlobalStateMgr.getCurrentState().getEditLog().logAddComputeNode(newComputeNode);
@@ -175,11 +175,10 @@ public class SystemInfoService {
         computeNode.setBackendState(BackendState.using);
     }
 
-    public void addComuteNodeToWarehouse(ComputeNode computeNode) {
-        String currentWarehouse = ConnectContext.get().getCurrentWarehouse();
+    public void addComuteNodeToWarehouse(ComputeNode computeNode, String warehouseName) {
         // for debug
-        LOG.info("currentWarehouse is {}", currentWarehouse);
-        Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(currentWarehouse);
+        LOG.info("warehouseName in addComuteNodeToWarehouse is {}", warehouseName);
+        Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(warehouseName);
         computeNode.setWorkerGroupId(warehouse.getAnyAvailableCluster().getWorkerGroupId());
     }
 
@@ -243,7 +242,7 @@ public class SystemInfoService {
         // add backend to DEFAULT_CLUSTER
         setBackendOwner(newBackend);
 
-        addComuteNodeToWarehouse(newBackend);
+        addComuteNodeToWarehouse(newBackend, WarehouseManager.DEFAULT_WAREHOUSE_NAME);
 
         // log
         GlobalStateMgr.getCurrentState().getEditLog().logAddBackend(newBackend);

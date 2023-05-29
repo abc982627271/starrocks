@@ -50,6 +50,10 @@ public class ComputeNodeClause extends AlterClause {
         return hostPorts;
     }
 
+    public String getWarehouseName() {
+        return warehouseName;
+    }
+
     @Override
     public <R, C> R accept(AstVisitor<R, C> visitor, C context) {
         return visitor.visitComputeNodeClause(this, context);
