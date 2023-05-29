@@ -15,6 +15,7 @@
 
 package com.starrocks.sql.ast;
 
+import com.starrocks.server.WarehouseManager;
 import com.starrocks.sql.parser.NodePosition;
 
 import java.util.List;
@@ -22,10 +23,14 @@ import java.util.List;
 public class AddComputeNodeClause extends ComputeNodeClause {
 
     public AddComputeNodeClause(List<String> hostPorts) {
-        this(hostPorts, NodePosition.ZERO);
+        this(hostPorts, NodePosition.ZERO, WarehouseManager.DEFAULT_WAREHOUSE_NAME);
     }
 
-    public AddComputeNodeClause(List<String> hostPorts, NodePosition pos) {
-        super(hostPorts, pos);
+    public AddComputeNodeClause(List<String> hostPorts, String warehouseName) {
+        this(hostPorts, NodePosition.ZERO, warehouseName);
+    }
+
+    public AddComputeNodeClause(List<String> hostPorts, NodePosition pos, String warehouseName) {
+        super(hostPorts, pos, warehouseName);
     }
 }

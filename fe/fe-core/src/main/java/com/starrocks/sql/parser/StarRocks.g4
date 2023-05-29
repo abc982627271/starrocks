@@ -833,7 +833,7 @@ modifyBackendHostClause
    ;
 
 addComputeNodeClause
-   : ADD COMPUTE NODE string (',' string)* (INTO WAREHOUSE) identifierOrString
+   : ADD COMPUTE NODE string (',' string)* (INTO WAREHOUSE)? identifierOrString
    ;
 
 dropComputeNodeClause
