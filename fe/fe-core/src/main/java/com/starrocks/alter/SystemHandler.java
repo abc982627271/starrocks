@@ -135,7 +135,8 @@ public class SystemHandler extends AlterHandler {
         if (alterClause instanceof AddBackendClause) {
             // add backend
             AddBackendClause addBackendClause = (AddBackendClause) alterClause;
-            GlobalStateMgr.getCurrentSystemInfo().addBackends(addBackendClause.getHostPortPairs());
+            GlobalStateMgr.getCurrentSystemInfo().
+                    addBackends(addBackendClause.getHostPortPairs(), addBackendClause.getWarehouseName());
         } else if (alterClause instanceof ModifyBackendAddressClause) {
             // update Backend Address
             ModifyBackendAddressClause modifyBackendAddressClause = (ModifyBackendAddressClause) alterClause;

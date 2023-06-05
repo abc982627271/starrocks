@@ -3400,7 +3400,13 @@ public class AstBuilder extends StarRocksBaseVisitor<ParseNode> {
     public ParseNode visitAddBackendClause(StarRocksParser.AddBackendClauseContext context) {
         List<String> backends =
                 context.string().stream().map(c -> ((StringLiteral) visit(c)).getStringValue()).collect(toList());
-        return new AddBackendClause(backends, createPos(context));
+        // TODO: need to remove this change after be split into cn + dn
+        String whName = null;
+        if (context.warehouseName != null) {
+            Identifier identifier = (Identifier) visit(context.identifierOrString());
+            whName = identifier.getValue();
+        }
+        return new AddBackendClause(backends, createPos(context), whName);
     }
 
     @Override
@@ -3428,8 +3434,11 @@ public class AstBuilder extends StarRocksBaseVisitor<ParseNode> {
     public ParseNode visitAddComputeNodeClause(StarRocksParser.AddComputeNodeClauseContext context) {
         List<String> hostPorts =
                 context.string().stream().map(c -> ((StringLiteral) visit(c)).getStringValue()).collect(toList());
-        Identifier identifier = (Identifier) visit(context.identifierOrString());
-        String whName = identifier.getValue();
+        String whName = null;
+        if (context.warehouseName != null) {
+            Identifier identifier = (Identifier) visit(context.identifierOrString());
+            whName = identifier.getValue();
+        }
         return new AddComputeNodeClause(hostPorts, whName);
     }
 

@@ -36,9 +36,7 @@ public class ComputeNodeClause extends AlterClause {
     }
 
     public ComputeNodeClause(List<String> hostPorts, NodePosition pos, String warehouseName) {
-        super(AlterOpType.ALTER_OTHER, pos);
-        this.hostPorts = hostPorts;
-        this.hostPortPairs = new LinkedList<>();
+        this(hostPorts, pos);
         this.warehouseName = warehouseName;
     }
 

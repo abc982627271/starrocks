@@ -219,13 +219,13 @@ public class SystemInfoServiceTest {
         AddBackendClause stmt = new AddBackendClause(Lists.newArrayList("192.168.0.1:1234"));
         com.starrocks.sql.analyzer.Analyzer.analyze(new AlterSystemStmt(stmt), new ConnectContext(null));
         try {
-            GlobalStateMgr.getCurrentSystemInfo().addBackends(stmt.getHostPortPairs());
+            GlobalStateMgr.getCurrentSystemInfo().addBackends(stmt.getHostPortPairs(), null);
         } catch (DdlException e) {
             Assert.fail();
         }
 
         try {
-            GlobalStateMgr.getCurrentSystemInfo().addBackends(stmt.getHostPortPairs());
+            GlobalStateMgr.getCurrentSystemInfo().addBackends(stmt.getHostPortPairs(), null);
         } catch (DdlException e) {
             Assert.assertTrue(e.getMessage().contains("already exists"));
         }
@@ -248,7 +248,7 @@ public class SystemInfoServiceTest {
         AddBackendClause stmt = new AddBackendClause(Lists.newArrayList("192.168.0.1:1234"));
         com.starrocks.sql.analyzer.Analyzer.analyze(new AlterSystemStmt(stmt), new ConnectContext(null));
         try {
-            GlobalStateMgr.getCurrentSystemInfo().addBackends(stmt.getHostPortPairs());
+            GlobalStateMgr.getCurrentSystemInfo().addBackends(stmt.getHostPortPairs(), null);
         } catch (DdlException e) {
             e.printStackTrace();
         }
@@ -299,7 +299,7 @@ public class SystemInfoServiceTest {
         com.starrocks.sql.analyzer.Analyzer.analyze(new AlterSystemStmt(stmt2), new ConnectContext(null));
 
         try {
-            GlobalStateMgr.getCurrentSystemInfo().addBackends(stmt2.getHostPortPairs());
+            GlobalStateMgr.getCurrentSystemInfo().addBackends(stmt2.getHostPortPairs(), null);
         } catch (DdlException e) {
             e.printStackTrace();
         }

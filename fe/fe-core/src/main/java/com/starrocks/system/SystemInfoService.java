@@ -176,6 +176,9 @@ public class SystemInfoService {
     }
 
     public void addComuteNodeToWarehouse(ComputeNode computeNode, String warehouseName) {
+        if (warehouseName == null) {
+            warehouseName = WarehouseManager.DEFAULT_WAREHOUSE_NAME;
+        }
         // for debug
         LOG.info("warehouseName in addComuteNodeToWarehouse is {}", warehouseName);
         Warehouse warehouse = GlobalStateMgr.getCurrentWarehouseMgr().getWarehouse(warehouseName);
@@ -190,7 +193,7 @@ public class SystemInfoService {
      * @param hostPortPairs : backend's host and port
      * @throws DdlException
      */
-    public void addBackends(List<Pair<String, Integer>> hostPortPairs) throws DdlException {
+    public void addBackends(List<Pair<String, Integer>> hostPortPairs, String warehouseName) throws DdlException {
         for (Pair<String, Integer> pair : hostPortPairs) {
             // check is already exist
             if (getBackendWithHeartbeatPort(pair.first, pair.second) != null) {
@@ -199,7 +202,7 @@ public class SystemInfoService {
         }
 
         for (Pair<String, Integer> pair : hostPortPairs) {
-            addBackend(pair.first, pair.second);
+            addBackend(pair.first, pair.second, warehouseName);
         }
     }
 
@@ -229,7 +232,7 @@ public class SystemInfoService {
     }
 
     // Final entry of adding backend
-    private void addBackend(String host, int heartbeatPort) {
+    private void addBackend(String host, int heartbeatPort, String warehouseName) {
         Backend newBackend = new Backend(GlobalStateMgr.getCurrentState().getNextId(), host, heartbeatPort);
         // update idToBackend
         idToBackendRef.put(newBackend.getId(), newBackend);
@@ -242,7 +245,7 @@ public class SystemInfoService {
         // add backend to DEFAULT_CLUSTER
         setBackendOwner(newBackend);
 
-        addComuteNodeToWarehouse(newBackend, WarehouseManager.DEFAULT_WAREHOUSE_NAME);
+        addComuteNodeToWarehouse(newBackend, warehouseName);
 
         // log
         GlobalStateMgr.getCurrentState().getEditLog().logAddBackend(newBackend);

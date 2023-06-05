@@ -23,7 +23,7 @@ singleStatement
     : (statement (SEMICOLON | EOF)) | emptyStatement
     ;
 emptyStatement
-    : SEMICOLON
+    : SEMICOLO
     ;
 
 statement
@@ -816,12 +816,14 @@ modifyFrontendHostClause
   : MODIFY FRONTEND HOST string TO string
   ;
 
+// TODO: need to remove this change after be split into cn + dn
 addBackendClause
-   : ADD BACKEND string (',' string)*
+   : ADD BACKEND string (',' string)* (INTO WAREHOUSE)? warehouseName=identifierOrString?
    ;
 
+// TODO: need to remove this change after be split into cn + dn
 dropBackendClause
-   : DROP BACKEND string (',' string)* FORCE?
+   : DROP BACKEND string (',' string)* FORCE? (FROM WAREHOUSE)? warehouseName=identifierOrString?
    ;
 
 decommissionBackendClause
@@ -833,11 +835,11 @@ modifyBackendHostClause
    ;
 
 addComputeNodeClause
-   : ADD COMPUTE NODE string (',' string)* (INTO WAREHOUSE)? identifierOrString
+   : ADD COMPUTE NODE string (',' string)* (INTO WAREHOUSE)? warehouseName=identifierOrString?
    ;
 
 dropComputeNodeClause
-   : DROP COMPUTE NODE string (',' string)*
+   : DROP COMPUTE NODE string (',' string)* (FROM WAREHOUSE)? warehouseName=identifierOrString?
    ;
 
 modifyBrokerClause
