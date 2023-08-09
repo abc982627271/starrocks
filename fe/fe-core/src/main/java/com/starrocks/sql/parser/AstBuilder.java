@@ -1753,12 +1753,7 @@ public class AstBuilder extends StarRocksBaseVisitor<ParseNode> {
             pattern = stringLiteral.getValue();
         }
 
-        Expr where = null;
-        if (context.expression() != null) {
-            where = (Expr) visit(context.expression());
-        }
-
-        return new ShowWarehousesStmt(pattern, where, createPos(context));
+        return new ShowWarehousesStmt(pattern, createPos(context));
     }
 
     @Override

@@ -15,7 +15,7 @@
 
 package com.starrocks.sql.ast;
 
-import com.starrocks.analysis.Expr;
+import com.google.common.base.Strings;
 import com.starrocks.catalog.Column;
 import com.starrocks.catalog.ScalarType;
 import com.starrocks.qe.ShowResultSetMetaData;
@@ -31,20 +31,10 @@ public class ShowWarehousesStmt extends ShowStmt {
                     .addColumn(new Column("ClusterCount", ScalarType.createVarchar(20)))
                     .build();
     private final String pattern;
-    private Expr where;
 
-    public ShowWarehousesStmt(String pattern) {
-        this(pattern, null, NodePosition.ZERO);
-    }
-
-    public ShowWarehousesStmt(String pattern, Expr where) {
-        this(pattern, where, NodePosition.ZERO);
-    }
-
-    public ShowWarehousesStmt(String pattern, Expr where, NodePosition pos) {
+    public ShowWarehousesStmt(String pattern, NodePosition pos) {
         super(pos);
-        this.pattern = pattern;
-        this.where = where;
+        this.pattern = Strings.nullToEmpty(pattern);
     }
 
     public String getPattern() {
