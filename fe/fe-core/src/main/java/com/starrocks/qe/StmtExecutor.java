@@ -477,7 +477,7 @@ public class StmtExecutor {
                 context.getState().setIsQuery(true);
                 final boolean isStatisticsJob = AnalyzerUtils.isStatisticsJob(context, parsedStmt);
                 if (!isStatisticsJob) {
-                    WarehouseMetricMgr.increaseUnfinishedQueries(context.getCurrentWarehouse(), 1L);
+                    WarehouseMetricMgr.increaseUnfinishedQueries(context.getCurrentWarehouseId(), 1L);
                 }
                 context.setStatisticsJob(isStatisticsJob);
 
@@ -595,7 +595,7 @@ public class StmtExecutor {
                                 }
                             }
                             if (!isStatisticsJob) {
-                                WarehouseMetricMgr.increaseUnfinishedQueries(context.getCurrentWarehouse(), -1L);
+                                WarehouseMetricMgr.increaseUnfinishedQueries(context.getCurrentWarehouseId(), -1L);
                             }
                         }
                         QeProcessorImpl.INSTANCE.unregisterQuery(context.getExecutionId());

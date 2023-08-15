@@ -66,6 +66,7 @@ import com.starrocks.sql.optimizer.dump.QueryDumpInfo;
 import com.starrocks.sql.parser.SqlParser;
 import com.starrocks.thrift.TUniqueId;
 import com.starrocks.thrift.TWorkGroup;
+import com.starrocks.warehouse.Warehouse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -615,6 +616,16 @@ public class ConnectContext {
             return currentWarehouse;
         }
         return WarehouseManager.DEFAULT_WAREHOUSE_NAME;
+    }
+
+    public long getCurrentWarehouseId() {
+        if (currentWarehouse != null) {
+            Warehouse warehouse = globalStateMgr.getWarehouseMgr().getWarehouse(currentWarehouse);
+            if (warehouse != null) {
+                return warehouse.getId();
+            }
+        }
+        return WarehouseManager.DEFAULT_WAREHOUSE_ID;
     }
 
     public void setCurrentWarehouse(String currentWarehouse) {

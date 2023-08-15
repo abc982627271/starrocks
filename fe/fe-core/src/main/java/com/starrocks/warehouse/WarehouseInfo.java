@@ -22,8 +22,8 @@ import java.util.Objects;
 public class WarehouseInfo {
     public static final long ABSENT_ID = -1L;
 
-    @SerializedName(value = "warehouse")
-    String warehouse;
+    @SerializedName(value = "warehouseId")
+    long warehouseId;
 
     @SerializedName(value = "id")
     private long id = ABSENT_ID;
@@ -42,18 +42,18 @@ public class WarehouseInfo {
     public WarehouseInfo() {
     }
 
-    public WarehouseInfo(String warehouse) {
-        this.warehouse = warehouse;
+    public WarehouseInfo(long warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
-    public WarehouseInfo(String warehouse, long id) {
-        this.warehouse = warehouse;
+    public WarehouseInfo(long warehouseId, long id) {
+        this.warehouseId = warehouseId;
         this.id = id;
     }
 
-    public WarehouseInfo(String warehouse, long id, long numUnfinishedQueryJobs, long numUnfinishedLoadJobs,
+    public WarehouseInfo(long warehouseId, long id, long numUnfinishedQueryJobs, long numUnfinishedLoadJobs,
                          long numUnfinishedBackupJobs, long numUnfinishedRestoreJobs, long lastFinishedJobTimestampMs) {
-        this.warehouse = warehouse;
+        this.warehouseId = warehouseId;
         this.id = id;
         this.numUnfinishedQueryJobs = numUnfinishedQueryJobs;
         this.numUnfinishedLoadJobs = numUnfinishedLoadJobs;
@@ -82,8 +82,8 @@ public class WarehouseInfo {
         lastFinishedJobTimestampMs = Math.max(lastFinishedJobTimestampMs, timestampMs);
     }
 
-    public String getWarehouse() {
-        return warehouse;
+    public long getWarehouseId() {
+        return warehouseId;
     }
 
     public void setId(long id) {
@@ -116,7 +116,7 @@ public class WarehouseInfo {
 
     public TWarehouseInfo toThrift() {
         return new TWarehouseInfo()
-                .setWarehouse(warehouse)
+                .setWarehouse_id(warehouseId)
                 .setId(id)
                 .setNum_unfinished_query_jobs(numUnfinishedQueryJobs)
                 .setNum_unfinished_load_jobs(numUnfinishedLoadJobs)
@@ -126,7 +126,7 @@ public class WarehouseInfo {
     }
 
     public static WarehouseInfo fromThrift(TWarehouseInfo tinfo) {
-        WarehouseInfo info = new WarehouseInfo(tinfo.getWarehouse());
+        WarehouseInfo info = new WarehouseInfo(tinfo.getWarehouse_id());
         info.id = tinfo.getId();
         info.numUnfinishedQueryJobs = tinfo.getNum_unfinished_query_jobs();
         info.numUnfinishedLoadJobs = tinfo.getNum_unfinished_load_jobs();
@@ -137,7 +137,7 @@ public class WarehouseInfo {
     }
 
     public static WarehouseInfo fromWarehouse(Warehouse wh) {
-        return new WarehouseInfo(wh.getName(), wh.getId());
+        return new WarehouseInfo(wh.getId(), wh.getId());
     }
 
     @Override
@@ -154,19 +154,19 @@ public class WarehouseInfo {
                 numUnfinishedBackupJobs == that.numUnfinishedBackupJobs &&
                 numUnfinishedRestoreJobs == that.numUnfinishedRestoreJobs &&
                 lastFinishedJobTimestampMs == that.lastFinishedJobTimestampMs &&
-                Objects.equals(warehouse, that.warehouse);
+                Objects.equals(warehouseId, that.warehouseId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(warehouse, id, numUnfinishedQueryJobs, numUnfinishedLoadJobs, numUnfinishedBackupJobs,
+        return Objects.hash(warehouseId, id, numUnfinishedQueryJobs, numUnfinishedLoadJobs, numUnfinishedBackupJobs,
                 numUnfinishedRestoreJobs, lastFinishedJobTimestampMs);
     }
 
     @Override
     public String toString() {
         return "WarehouseInfo{" +
-                "warehouse='" + warehouse + '\'' +
+                "warehouse='" + warehouseId + '\'' +
                 ", id=" + id +
                 ", numUnfinishedQueryJobs=" + numUnfinishedQueryJobs +
                 ", numUnfinishedLoadJobs=" + numUnfinishedLoadJobs +
