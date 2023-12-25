@@ -83,7 +83,6 @@ import com.starrocks.rpc.FrontendServiceProxy;
 import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.server.RunMode;
 import com.starrocks.service.FrontendOptions;
-import com.starrocks.system.Backend;
 import com.starrocks.system.ComputeNode;
 import com.starrocks.task.AgentTask;
 import com.starrocks.task.AgentTaskQueue;
@@ -1054,15 +1053,20 @@ public class LeaderImpl {
     @NotNull
     private static List<TBackendMeta> getBackendMetas() {
         List<TBackendMeta> backends = new ArrayList<>();
-        for (Backend backend : GlobalStateMgr.getCurrentSystemInfo().getBackends()) {
+        List<Long> nodeIdList = GlobalStateMgr.getCurrentSystemInfo().getBackendIds();
+        if (RunMode.isSharedDataMode()) {
+            nodeIdList.addAll(GlobalStateMgr.getCurrentSystemInfo().getComputeNodeIds(false));
+        }
+        for (long nodeId : nodeIdList) {
+            ComputeNode node = GlobalStateMgr.getCurrentSystemInfo().getBackendOrComputeNode(nodeId);
             TBackendMeta backendMeta = new TBackendMeta();
-            backendMeta.setBackend_id(backend.getId());
-            backendMeta.setHost(backend.getHost());
-            backendMeta.setBe_port(backend.getBePort());
-            backendMeta.setRpc_port(backend.getBrpcPort());
-            backendMeta.setHttp_port(backend.getHttpPort());
-            backendMeta.setAlive(backend.isAlive());
-            backendMeta.setState(backend.getBackendState().ordinal());
+            backendMeta.setBackend_id(node.getId());
+            backendMeta.setHost(node.getHost());
+            backendMeta.setBe_port(node.getBePort());
+            backendMeta.setRpc_port(node.getBrpcPort());
+            backendMeta.setHttp_port(node.getHttpPort());
+            backendMeta.setAlive(node.isAlive());
+            backendMeta.setState(node.getBackendState().ordinal());
             backends.add(backendMeta);
         }
         return backends;
